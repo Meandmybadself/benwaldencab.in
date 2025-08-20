@@ -42,7 +42,19 @@
     <!-- Favicon (using the background image) -->
     <link rel="icon" type="image/webp" href="bg.webp">
     <link rel="apple-touch-icon" href="bg.webp">
+    <!-- Typography.com fonts with Google Fonts fallback -->
     <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6984932/7080032/css/fonts.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@600;700&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Font loading optimization -->
+    <style>
+        /* Ensure fonts are displayed immediately with fallbacks while loading */
+        .cabin-name, .est-tag, .trail-link {
+            font-display: swap;
+        }
+    </style>
     <style>
         * {
             margin: 0;
@@ -52,14 +64,18 @@
 
         body, html {
             height: 100%;
-            font-family: 'DM Serif Text', serif;
+            height: 100dvh; /* Use dynamic viewport height for mobile browsers */
             overflow: hidden;
+            /* Improve font rendering on iOS */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .hero-container {
             position: relative;
             width: 100vw;
             height: 100vh;
+            height: 100dvh; /* Use dynamic viewport height for mobile browsers */
             background: linear-gradient(135deg, #2c3e50, #3498db);
             display: flex;
             align-items: center;
@@ -101,19 +117,18 @@
         }
 
         .cabin-name {
-            font-family: "Chronicle Display A", "Chronicle Display B";
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Times New Roman", "Georgia", serif;
             font-style: normal;
             font-weight: 600;
             font-size: 3.5rem;
             margin-bottom: 0.5rem;
-            text-align: center;
             display: flex;
             align-items: baseline;
             gap: 0.5rem;
         }
 
         .est-tag {
-            font-family: "Ringside Narrow A", "Ringside Narrow B";
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", "Arial", sans-serif;
             font-style: normal;
             font-weight: 400;
             font-size: 0.8rem;
@@ -122,7 +137,7 @@
         }
 
         .trail-link {
-            font-family: "Ringside Narrow A", "Ringside Narrow B";
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", "Arial", sans-serif;
             font-style: normal;
             font-weight: 400;
             font-size: 1.1rem;
@@ -141,41 +156,59 @@
         /* Responsive design */
         @media (max-width: 768px) {
             .content {
-                bottom: 1rem;
-                left: 1rem;
-                right: 1rem;
+                /* Center content on mobile to avoid address bar issues */
+                top: 50%;
+                left: 50%;
+                bottom: unset;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                width: 95%;
+                max-width: 500px;
+                padding: 0 1rem;
             }
 
             .cabin-name {
-                font-size: 2.5rem;
+                font-size: 3.58rem; /* 10% bigger than 3.25rem (3.25 * 1.1) */
                 margin-bottom: 1rem;
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center;
                 gap: 0.5rem;
             }
 
             .est-tag {
-                font-size: 0.8rem;
+                font-size: 1.04rem; /* 30% bigger than 0.8rem */
             }
 
             .trail-link {
-                font-size: 1rem;
+                font-size: 1.3rem; /* 30% bigger than 1rem */
                 display: block;
-                text-align: left;
+                text-align: center;
             }
 
         }
 
         @media (max-width: 480px) {
+            .content {
+                /* Adjust for very small screens and notched devices */
+                padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem;
+                width: 90%;
+            }
+
             .cabin-name {
-                font-size: 2rem;
+                font-size: 2.86rem; /* 10% bigger than 2.6rem (2.6 * 1.1) */
             }
 
             .est-tag {
-                font-size: 0.7rem;
+                font-size: 0.91rem; /* 30% bigger than 0.7rem */
             }
+        }
 
-          
+        /* Specific adjustments for mobile browsers with dynamic UI */
+        @media screen and (max-height: 700px) {
+            .content {
+                /* On shorter screens, ensure content is always visible */
+                top: 45%;
+            }
         }
     </style>
 </head>
@@ -186,11 +219,22 @@
         
         <div class="content">
             <h1 class="cabin-name">
-                <span>Benwalden</span>
+                <span id="benwalden-name" style="cursor: pointer;">Benwalden</span>
                 <span class="est-tag">Est 2025</span>
             </h1>
             
         </div>
     </div>
+    
+    <script>
+        const benwaldeName = document.getElementById('benwalden-name');
+        
+        benwaldeName.addEventListener('click', () => {
+            const audio = new Audio('looncallalert.mp3');
+            audio.play().catch(error => {
+                console.log('Audio playback failed:', error);
+            });
+        });
+    </script>
 </body>
 </html>
