@@ -51,7 +51,7 @@
     <!-- Font loading optimization -->
     <style>
         /* Ensure fonts are displayed immediately with fallbacks while loading */
-        .cabin-name, .est-tag, .trail-link {
+        .cabin-name, .est-tag {
             font-display: swap;
         }
     </style>
@@ -76,7 +76,7 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh; /* Use dynamic viewport height for mobile browsers */
-            background: linear-gradient(135deg, #2c3e50, #3498db);
+            background: #C7C8CE;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -90,21 +90,6 @@
             top: 0;
             left: 0;
             z-index: 1;
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                45deg,
-                rgba(0, 0, 0, 0.3) 0%,
-                rgba(0, 0, 0, 0.1) 50%,
-                rgba(0, 0, 0, 0.2) 100%
-            );
-            z-index: 2;
         }
 
         .content {
@@ -136,22 +121,24 @@
             text-transform: uppercase;
         }
 
-        .trail-link {
-            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", "Arial", sans-serif;
-            font-style: normal;
-            font-weight: 400;
-            font-size: 1.1rem;
-            color: #FFF;
-            text-decoration: none;
-            transition: all 0.3s ease;
+        .map-link {
             display: inline-block;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
         }
 
-        .trail-link:hover {
-            color: white;
-            text-decoration-thickness: 2px;
-            transform: translateX(4px);
+        .map-link:hover {
+            transform: translateY(-2px);
         }
+
+        .map-marker {
+            width: 24px;
+            height: 24px;
+            fill: white;
+            filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5));
+        }
+
+    
 
         /* Responsive design */
         @media (max-width: 768px) {
@@ -179,10 +166,9 @@
                 font-size: 1.04rem; /* 30% bigger than 0.8rem */
             }
 
-            .trail-link {
-                font-size: 1.3rem; /* 30% bigger than 1rem */
-                display: block;
-                text-align: center;
+            .map-marker {
+                width: 28px;
+                height: 28px;
             }
 
         }
@@ -201,6 +187,11 @@
             .est-tag {
                 font-size: 0.91rem; /* 30% bigger than 0.7rem */
             }
+
+            .map-marker {
+                width: 26px;
+                height: 26px;
+            }
         }
 
         /* Specific adjustments for mobile browsers with dynamic UI */
@@ -215,13 +206,17 @@
 <body>
     <div class="hero-container">
         <img class="hero-image" src="bg.webp" alt="Benwalden Cabin on Gunflint Trail">
-        <div class="overlay"></div>
-        
         <div class="content">
             <h1 class="cabin-name">
                 <span id="benwalden-name" style="cursor: pointer;">Benwalden</span>
                 <span class="est-tag">Est 2025</span>
+                <a href="https://maps.app.goo.gl/e8kJ8kEZbtJZNNMH6" target="_blank" rel="noopener noreferrer" class="map-link" aria-label="View location on Google Maps">
+                    <svg class="map-marker" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                </a>
             </h1>
+            
             
         </div>
     </div>
