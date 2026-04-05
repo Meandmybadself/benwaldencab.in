@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Pre-commit hook: converts staged trail-cam images to WebP before committing,
+# then rebuilds trailcam/index.html so everything stays in sync.
+#
+# Setup (one-time): git config core.hooksPath .githooks
+set -euo pipefail
+
+# Find staged non-webp images under trailcam/images/
+staged=$(git diff --cached --name-only --diff-filter=ACR \
+  | grep '^trailcam/images/' \
+  | grep -iE '\.(jpg|jpeg|png|gif)$' \
+  || true)
+
+[[ -z "$staged" ]] && exit 0
+
+if ! command -v cwebp &>/dev/null; then
+  echo "error: cwebp not found — install it before committing images."
+  echo "       macOS:  brew install webp"
+  echo "       Linux:  sudo apt install webp"
+  echo ""
+  echo "       To skip (not recommended): git commit --no-verify"
+  exit 1
+fi
+
+echo "Converting staged images to WebP..."
+while IFS= read -r file; do
+  dest="${file%.*}.webp"
+  printf '  %s → %s\n' "$file" "$dest"
+  cwebp -q 82 -mt "$file" -o "$dest" 2>/dev/null
+  git rm --cached "$file"
+  rm "$file"
+  git add "$dest"
+done <<< "$staged"
+
+echo "Rebuilding trailcam page..."
+bash build-trailcam.sh
+git add trailcam/index.html
+
+echo "Done."

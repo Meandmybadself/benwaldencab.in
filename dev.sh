@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Ensure git uses the committed hooks directory (auto-setup after fresh clone)
+git config core.hooksPath .githooks 2>/dev/null || true
+
 # Get the local IP address
 LOCAL_IP=$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || echo "127.0.0.1")
 

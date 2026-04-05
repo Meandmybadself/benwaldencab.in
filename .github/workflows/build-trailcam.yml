@@ -1,0 +1,33 @@
+name: Build Trailcam Page
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'trailcam/images/**'
+      - 'build-trailcam.sh'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install WebP tools
+        run: sudo apt-get install -y webp
+
+      - name: Convert images and build trailcam page
+        run: bash build-trailcam.sh
+
+      - name: Commit changes if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Stage converted webp files and the generated page
+          git add trailcam/images/ trailcam/index.html
+          git diff --staged --quiet && echo "No changes to commit." || \
+            git commit -m "Convert images to WebP and rebuild trailcam page [skip ci]"
+          git push

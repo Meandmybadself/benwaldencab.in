@@ -121,24 +121,31 @@
             text-transform: uppercase;
         }
 
-        .map-link {
-            display: inline-block;
+        .icon-links {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             margin-top: 1rem;
+        }
+
+        .icon-link {
+            display: inline-block;
             transition: all 0.3s ease;
         }
 
-        .map-link:hover {
+        .icon-link:hover {
             transform: translateY(-2px);
         }
 
-        .map-marker {
+        .icon-link svg {
             width: 24px;
             height: 24px;
             fill: white;
             filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5));
+            display: block;
         }
 
-    
+
 
         /* Responsive design */
         @media (max-width: 768px) {
@@ -166,7 +173,7 @@
                 font-size: 1.04rem; /* 30% bigger than 0.8rem */
             }
 
-            .map-marker {
+            .icon-link svg {
                 width: 28px;
                 height: 28px;
             }
@@ -188,7 +195,7 @@
                 font-size: 0.91rem; /* 30% bigger than 0.7rem */
             }
 
-            .map-marker {
+            .icon-link svg {
                 width: 26px;
                 height: 26px;
             }
@@ -210,14 +217,20 @@
             <h1 class="cabin-name">
                 <span id="benwalden-name" style="cursor: pointer;">Benwalden</span>
                 <span class="est-tag">Est 2025</span>
-                <a href="https://maps.app.goo.gl/e8kJ8kEZbtJZNNMH6" target="_blank" rel="noopener noreferrer" class="map-link" aria-label="View location on Google Maps">
-                    <svg class="map-marker" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            </h1>
+            <div class="icon-links">
+                <a href="https://maps.app.goo.gl/e8kJ8kEZbtJZNNMH6" target="_blank" rel="noopener noreferrer" class="icon-link" aria-label="View location on Google Maps">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                     </svg>
                 </a>
-            </h1>
-            
-            
+                <a href="/trailcam/" class="icon-link" aria-label="View trail camera footage">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                    </svg>
+                </a>
+            </div>
+
         </div>
     </div>
     

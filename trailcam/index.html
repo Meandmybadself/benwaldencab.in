@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trail Camera — Benwalden</title>
+  <meta name="description" content="Trail camera footage from Benwalden cabin on the Gunflint Trail.">
+  <meta name="theme-color" content="#80A6BC">
+  <link rel="icon" type="image/webp" href="../bg.webp">
+  <link rel="apple-touch-icon" href="../bg.webp">
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6984932/7080032/css/fonts.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@600;700&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f1318;
+      color: #fff;
+      font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 2.5rem 2rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 0.2s;
+      margin-bottom: 0.75rem;
+    }
+    .back-link:hover { color: #80A6BC; }
+    .back-link svg { width: 14px; height: 14px; fill: currentColor; }
+
+    h1 {
+      font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", Georgia, serif;
+      font-weight: 600;
+      font-size: 2.25rem;
+      line-height: 1;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .subtitle {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #80A6BC;
+      margin-top: 0.5rem;
+    }
+
+    main { padding: 2rem; }
+
+    .grid {
+      columns: 3 280px;
+      column-gap: 1rem;
+    }
+
+    .photo {
+      break-inside: avoid;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #1c2028;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .photo:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .photo img { width: 100%; height: auto; display: block; }
+    .photo figcaption {
+      padding: 0.5rem 0.65rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .empty {
+      color: rgba(255,255,255,0.3);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 4rem;
+      text-align: center;
+    }
+
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: 92vw;
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 3px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      cursor: default;
+    }
+    #lightbox-close {
+      position: absolute;
+      top: 1.25rem; right: 1.5rem;
+      background: none; border: none;
+      color: rgba(255,255,255,0.5);
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    #lightbox-close:hover { color: #fff; }
+    .lb-nav {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: none; border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 2.5rem;
+      cursor: pointer;
+      padding: 0 1rem;
+      transition: color 0.15s;
+      line-height: 1;
+    }
+    .lb-nav:hover { color: #fff; }
+    #lb-prev { left: 0; }
+    #lb-next { right: 0; }
+
+    @media (max-width: 640px) {
+      header { padding: 1.75rem 1.25rem 1.25rem; }
+      main { padding: 1.25rem; }
+      h1 { font-size: 1.8rem; }
+      .grid { columns: 2 140px; column-gap: 0.6rem; }
+      .photo { margin-bottom: 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="back-link">
+    <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    Benwalden
+  </a>
+  <h1>Trail Camera</h1>
+  <p class="subtitle">Gunflint Trail, Minnesota &nbsp;&middot;&nbsp; 10 captures</p>
+</header>
+
+<main>
+  <div class="grid">
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0795.webp"><img src="images/IMG_0795.webp" alt="Trail camera" loading="lazy"></figure>
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0553.webp"><img src="images/IMG_0553.webp" alt="Trail camera" loading="lazy"></figure>
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0547.webp"><img src="images/IMG_0547.webp" alt="Trail camera" loading="lazy"></figure>
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0514.webp"><img src="images/IMG_0514.webp" alt="Trail camera" loading="lazy"></figure>
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0499.webp"><img src="images/IMG_0499.webp" alt="Trail camera" loading="lazy"></figure>
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0382.webp"><img src="images/IMG_0382.webp" alt="Trail camera" loading="lazy"></figure>
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0122.webp"><img src="images/IMG_0122.webp" alt="Trail camera" loading="lazy"></figure>
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0099.webp"><img src="images/IMG_0099.webp" alt="Trail camera" loading="lazy"></figure>
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0094.webp"><img src="images/IMG_0094.webp" alt="Trail camera" loading="lazy"></figure>
+      <figure class="photo" onclick="openLightbox(this)" data-src="images/IMG_0018.webp"><img src="images/IMG_0018.webp" alt="Trail camera" loading="lazy"></figure>
+  </div>
+</main>
+
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button id="lightbox-close" aria-label="Close">&times;</button>
+  <button class="lb-nav" id="lb-prev" aria-label="Previous">&#8249;</button>
+  <img id="lb-img" src="" alt="Trail camera capture">
+  <button class="lb-nav" id="lb-next" aria-label="Next">&#8250;</button>
+</div>
+
+<script>
+  const lightbox = document.getElementById("lightbox");
+  const lbImg    = document.getElementById("lb-img");
+  const photos   = Array.from(document.querySelectorAll(".photo"));
+  let current    = 0;
+
+  function openLightbox(el) {
+    current = photos.indexOf(el);
+    lbImg.src = el.dataset.src;
+    lbImg.alt = el.querySelector("img").alt;
+    lightbox.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove("open");
+    document.body.style.overflow = "";
+    lbImg.src = "";
+  }
+
+  function navigate(dir) {
+    current = (current + dir + photos.length) % photos.length;
+    const el = photos[current];
+    lbImg.src = el.dataset.src;
+    lbImg.alt = el.querySelector("img").alt;
+  }
+
+  document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
+  document.getElementById("lb-prev").addEventListener("click", function(e) { e.stopPropagation(); navigate(-1); });
+  document.getElementById("lb-next").addEventListener("click", function(e) { e.stopPropagation(); navigate(1); });
+  lightbox.addEventListener("click", function(e) { if (e.target === lightbox) closeLightbox(); });
+
+  document.addEventListener("keydown", function(e) {
+    if (!lightbox.classList.contains("open")) return;
+    if (e.key === "Escape")     closeLightbox();
+    if (e.key === "ArrowLeft")  navigate(-1);
+    if (e.key === "ArrowRight") navigate(1);
+  });
+</script>
+
+</body>
+</html>
