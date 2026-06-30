@@ -62,10 +62,11 @@
             box-sizing: border-box;
         }
 
-        body, html {
-            height: 100%;
-            height: 100dvh; /* Use dynamic viewport height for mobile browsers */
-            overflow: hidden;
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
             /* Improve font rendering on iOS */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -208,6 +209,130 @@
                 top: 45%;
             }
         }
+
+        /* Scroll cue nudging visitors toward the birds section */
+        .scroll-cue {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            color: white;
+            text-decoration: none;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            animation: scroll-bob 2.2s ease-in-out infinite;
+        }
+
+        .scroll-cue span {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .scroll-cue svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+            filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5));
+        }
+
+        @keyframes scroll-bob {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 6px); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-cue { animation: none; }
+        }
+
+        /* "Birds heard this week" section */
+        .birds-section {
+            background: #ece9e1;
+            color: #2b3a33;
+            padding: 4.5rem 1.5rem 5.5rem;
+        }
+
+        .birds-heading {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-weight: 600;
+            font-size: clamp(2rem, 5vw, 3rem);
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .birds-sub {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.78rem;
+            text-align: center;
+            color: #74837a;
+            margin-top: 0.7rem;
+        }
+
+        .birds-grid {
+            max-width: 1100px;
+            margin: 2.75rem auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 2.25rem 1.5rem;
+        }
+
+        .bird-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin: 0;
+        }
+
+        .bird-thumb {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--ring, #cdd5d0);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+            background: #dfe3df;
+        }
+
+        .bird-name {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-top: 0.9rem;
+            line-height: 1.2;
+        }
+
+        .bird-count {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.72rem;
+            color: #7a8880;
+            margin-top: 0.3rem;
+        }
+
+        @media (max-width: 480px) {
+            .birds-grid {
+                grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+                gap: 1.75rem 1rem;
+            }
+
+            .bird-thumb {
+                width: 92px;
+                height: 92px;
+            }
+
+            .bird-name {
+                font-size: 0.95rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -232,8 +357,20 @@
             </div>
 
         </div>
+        <a href="#birds" id="scroll-cue" class="scroll-cue" aria-label="Jump to birds heard this week" hidden>
+            <span>Birds heard this week</span>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M12 16.5 4.5 9l1.4-1.4L12 13.7l6.1-6.1L19.5 9z"/>
+            </svg>
+        </a>
     </div>
-    
+
+    <section id="birds" class="birds-section" aria-labelledby="birds-heading" hidden>
+        <h2 id="birds-heading" class="birds-heading">Birds heard this week</h2>
+        <p class="birds-sub">Identified by sound around the cabin</p>
+        <div id="birds-grid" class="birds-grid"></div>
+    </section>
+
     <script>
         const benwaldeName = document.getElementById('benwalden-name');
         
@@ -243,6 +380,60 @@
                 console.log('Audio playback failed:', error);
             });
         });
+
+        // Populate "Birds heard this week" from the BirdWeather proxy feed.
+        // The section stays hidden unless the feed loads with birds, so the
+        // page degrades to the plain splash if the feed is unavailable.
+        (function loadBirds() {
+            const FEED = 'https://birdweather.benwaldencab.in/species?period=week';
+
+            fetch(FEED)
+                .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+                .then((data) => {
+                    const species = (data && data.species) || [];
+                    const birds = species.filter((s) => s.thumbnailUrl);
+                    if (!birds.length) return;
+
+                    const grid = document.getElementById('birds-grid');
+                    const frag = document.createDocumentFragment();
+
+                    birds.forEach((s) => {
+                        const card = document.createElement('figure');
+                        card.className = 'bird-card';
+
+                        const img = document.createElement('img');
+                        img.className = 'bird-thumb';
+                        img.src = s.thumbnailUrl;
+                        img.alt = s.commonName || s.scientificName || 'Bird';
+                        img.loading = 'lazy';
+                        img.width = 120;
+                        img.height = 120;
+                        if (s.color) img.style.setProperty('--ring', s.color);
+
+                        const name = document.createElement('figcaption');
+                        name.className = 'bird-name';
+                        name.textContent = s.commonName || s.scientificName || 'Unknown bird';
+
+                        card.append(img, name);
+
+                        const total = s.detections && s.detections.total;
+                        if (total) {
+                            const count = document.createElement('span');
+                            count.className = 'bird-count';
+                            count.textContent = total + (total === 1 ? ' call' : ' calls');
+                            card.append(count);
+                        }
+
+                        frag.append(card);
+                    });
+
+                    grid.append(frag);
+                    document.getElementById('birds').hidden = false;
+                    const cue = document.getElementById('scroll-cue');
+                    if (cue) cue.hidden = false;
+                })
+                .catch((err) => console.log('Birds feed unavailable:', err));
+        })();
     </script>
 </body>
 </html>
