@@ -293,6 +293,15 @@
             line-height: 1.2;
         }
 
+        .bird-sci {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-style: italic;
+            font-size: 0.85rem;
+            color: #74837a;
+            margin-top: 0.15rem;
+            line-height: 1.2;
+        }
+
         .bird-count {
             font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
             text-transform: uppercase;
@@ -399,6 +408,15 @@
                         name.textContent = s.commonName || s.scientificName || 'Unknown bird';
 
                         card.append(img, name);
+
+                        // Show the scientific name in italics when it adds info
+                        // (skip if it's the only name we have and already shown).
+                        if (s.scientificName && s.scientificName !== name.textContent) {
+                            const sci = document.createElement('span');
+                            sci.className = 'bird-sci';
+                            sci.textContent = s.scientificName;
+                            card.append(sci);
+                        }
 
                         const total = s.detections && s.detections.total;
                         if (total) {
