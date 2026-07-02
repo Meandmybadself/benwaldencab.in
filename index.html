@@ -114,6 +114,7 @@
             margin-bottom: 0.5rem;
             display: flex;
             align-items: baseline;
+            flex-wrap: wrap;
             gap: 0.5rem;
         }
 
@@ -124,6 +125,17 @@
             font-size: 0.8rem;
             color: #FFF;
             text-transform: uppercase;
+        }
+
+        .hero-address {
+            /* Desktop: forced onto its own line beneath "Benwalden Est 2025".
+               Mobile: reordered to sit between the name and the est tag. */
+            flex-basis: 100%;
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", "Arial", sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: #FFF;
         }
 
         .icon-links {
@@ -176,6 +188,13 @@
 
             .est-tag {
                 font-size: 1.04rem; /* 30% bigger than 0.8rem */
+                order: 3;
+            }
+
+            .hero-address {
+                order: 2; /* between "Benwalden" and "Est 2025" */
+                flex-basis: auto;
+                font-size: 1rem;
             }
 
             .icon-link svg {
@@ -326,6 +345,236 @@
                 font-size: 0.95rem;
             }
         }
+
+        /* "Local Businesses" section */
+        .biz-section {
+            background: #e4e0d5;
+            color: #2b3a33;
+            padding: 4.5rem 1.5rem 5.5rem;
+        }
+
+        .biz-heading {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-weight: 600;
+            font-size: clamp(2rem, 5vw, 3rem);
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .biz-sub {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.78rem;
+            text-align: center;
+            color: #74837a;
+            margin-top: 0.7rem;
+        }
+
+        .biz-controls {
+            max-width: 760px;
+            margin: 2.5rem auto 0;
+        }
+
+        .biz-search {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid #cdd5cf;
+            border-radius: 8px;
+            font-family: "Work Sans", "Ringside Narrow A", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.95rem;
+            color: #2b3a33;
+            background: #fbfaf6;
+        }
+
+        .biz-search::placeholder { color: #a2ab9f; }
+
+        .biz-search:focus {
+            outline: none;
+            border-color: #4f6b62;
+        }
+
+        .biz-chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.45rem;
+            margin-top: 0.9rem;
+        }
+
+        .biz-chip {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.72rem;
+            font-weight: 500;
+            padding: 0.35rem 0.85rem;
+            border: 1.5px solid #cdd5cf;
+            border-radius: 99px;
+            background: transparent;
+            color: #74837a;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .biz-chip:hover {
+            border-color: #4f6b62;
+            color: #4f6b62;
+        }
+
+        .biz-chip.active {
+            background: #4f6b62;
+            border-color: #4f6b62;
+            color: #fff;
+        }
+
+        .biz-list {
+            max-width: 760px;
+            margin: 2.25rem auto 0;
+        }
+
+        .biz-empty {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            text-align: center;
+            color: #8a958c;
+            font-size: 0.9rem;
+            padding: 1.5rem 0;
+        }
+
+        .biz-cat {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.74rem;
+            font-weight: 500;
+            color: #8a958c;
+            margin: 1.9rem 0 0.3rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid #cdd5cf;
+        }
+
+        .biz-cat:first-child { margin-top: 0; }
+
+        .biz-item { border-bottom: 1px solid #d8d3c6; }
+
+        .biz-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 0.25rem;
+            cursor: pointer;
+        }
+
+        .biz-row:hover .biz-name { color: #4f6b62; }
+
+        .biz-name {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            line-height: 1.2;
+            flex: 1;
+            transition: color 0.2s ease;
+        }
+
+        .biz-status {
+            font-family: "Work Sans", "Ringside Narrow A", "Helvetica Neue", "Arial", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 99px;
+            white-space: nowrap;
+        }
+
+        .biz-status.open { background: #dbe7dd; color: #2f5a45; }
+        .biz-status.closed { background: #ece0da; color: #8a5a48; }
+
+        .biz-chevron {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            color: #a9b0a6;
+            transition: transform 0.2s ease;
+        }
+
+        .biz-item.expanded .biz-chevron { transform: rotate(180deg); }
+
+        .biz-detail {
+            display: none;
+            padding: 0 0.25rem 1.15rem;
+        }
+
+        .biz-item.expanded .biz-detail { display: block; }
+
+        .biz-desc {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.55;
+            color: #5c6b62;
+            margin-bottom: 0.8rem;
+        }
+
+        .biz-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .biz-tag {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.72rem;
+            padding: 0.15rem 0.55rem;
+            border-radius: 99px;
+            background: #d8d3c6;
+            color: #74837a;
+        }
+
+        .biz-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 1.1rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .biz-meta a {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.85rem;
+            color: #4f6b62;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(79, 107, 98, 0.35);
+            padding-bottom: 1px;
+        }
+
+        .biz-meta a:hover {
+            color: #2b3a33;
+            border-color: #2b3a33;
+        }
+
+        .biz-hours {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.28rem 1.25rem;
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.85rem;
+            max-width: 320px;
+        }
+
+        .biz-hours .day { color: #8a958c; }
+        .biz-hours .time { color: #5c6b62; }
+        .biz-hours .day.today,
+        .biz-hours .time.today {
+            color: #2b3a33;
+            font-weight: 600;
+        }
+
+        .biz-note {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.82rem;
+            color: #8a5a48;
+            margin-top: 0.75rem;
+        }
     </style>
 </head>
 <body>
@@ -335,6 +584,7 @@
             <h1 class="cabin-name">
                 <span id="benwalden-name" style="cursor: pointer;">Benwalden</span>
                 <span class="est-tag">Est 2025</span>
+                <span class="hero-address">22 Austin's Landing, Grand Marais, MN 55604</span>
             </h1>
             <div class="icon-links">
                 <a href="https://maps.app.goo.gl/e8kJ8kEZbtJZNNMH6" target="_blank" rel="noopener noreferrer" class="icon-link" aria-label="View location on Google Maps">
@@ -352,6 +602,11 @@
                         <path d="M236.44,73.34,213.21,57.86A60,60,0,0,0,156,16h-.29C122.79,16.16,96,43.47,96,76.89V96.63L11.63,197.88l-.1.12A16,16,0,0,0,24,224h88A104.11,104.11,0,0,0,216,120V100.28l20.44-13.62a8,8,0,0,0,0-13.32ZM126.15,133.12l-60,72a8,8,0,1,1-12.29-10.24l60-72a8,8,0,1,1,12.29,10.24ZM164,80a12,12,0,1,1,12-12A12,12,0,0,1,164,80Z"/>
                     </svg>
                 </a>
+                <a href="#businesses" id="businesses-link" class="icon-link" aria-label="Jump to local businesses" hidden>
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4L3 12v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/>
+                    </svg>
+                </a>
             </div>
 
         </div>
@@ -362,6 +617,16 @@
         <p class="birds-sub">Identified by sound around the cabin in the past week</p>
         <p class="birds-credit">Captured with <a href="https://www.birdweather.com/birdnetpi" target="_blank" rel="noopener noreferrer">BirdNET Pi</a> with data stored with <a href="https://app.birdweather.com/stations/28413" target="_blank" rel="noopener noreferrer">Birdweather</a>.</p>
         <div id="birds-grid" class="birds-grid"></div>
+    </section>
+
+    <section id="businesses" class="biz-section" aria-labelledby="biz-heading" hidden>
+        <h2 id="biz-heading" class="biz-heading">Local Businesses</h2>
+        <p class="biz-sub">Around Grand Marais &amp; the Gunflint Trail — hours can be irregular</p>
+        <div class="biz-controls">
+            <input id="biz-search" class="biz-search" type="search" placeholder="Search businesses…" aria-label="Search businesses" autocomplete="off">
+            <div id="biz-chips" class="biz-chips"></div>
+        </div>
+        <div id="biz-list" class="biz-list"></div>
     </section>
 
     <script>
@@ -435,6 +700,210 @@
                     if (birdsLink) birdsLink.hidden = false;
                 })
                 .catch((err) => console.log('Birds feed unavailable:', err));
+        })();
+
+        // Populate "Local Businesses" from the Cabin OS public feed. Like the
+        // birds section, the whole thing stays hidden unless the feed loads with
+        // at least one business, so the page degrades to the plain splash.
+        (function loadBusinesses() {
+            const FEED = 'https://admin.benwaldencab.in/api/public/businesses';
+
+            const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+            const DAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+            const esc = (s) => String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+            const mapsUrl = (a) => 'https://maps.google.com/?q=' + encodeURIComponent(a);
+            // Normalize a stored website into a safe absolute http(s) link:
+            // bare domains get https://, and non-http schemes (javascript:, etc.) are dropped.
+            function safeUrl(u) {
+                const s = String(u == null ? '' : u).trim();
+                if (!s) return '';
+                if (/^https?:\/\//i.test(s)) return s;
+                if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return '';
+                return 'https://' + s;
+            }
+
+            // All open/closed reasoning happens in Central Time so the status
+            // reflects the cabin's locale regardless of the visitor's timezone.
+            function nowCT() {
+                const ct = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+                return { month: ct.getMonth() + 1, dow: ct.getDay(), minuteOfDay: ct.getHours() * 60 + ct.getMinutes() };
+            }
+            function todayStr() {
+                const ct = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+                return ct.getFullYear() + '-' + String(ct.getMonth() + 1).padStart(2, '0') + '-' + String(ct.getDate()).padStart(2, '0');
+            }
+            const parseTime = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+            function fmt12(t) {
+                const [h, m] = t.split(':').map(Number);
+                const h12 = h % 12 || 12, ampm = h >= 12 ? 'pm' : 'am';
+                return m === 0 ? `${h12}${ampm}` : `${h12}:${String(m).padStart(2, '0')}${ampm}`;
+            }
+            function isOpenNow(hours, closedMonths, closures) {
+                const now = nowCT();
+                if (closures.includes(todayStr())) return { status: 'closed', label: 'Closed today' };
+                if (closedMonths.includes(now.month)) return { status: 'closed', label: `Closed for ${MONTH_NAMES[now.month - 1]}` };
+
+                const todaySlot = hours[DAYS[now.dow]];
+                if (todaySlot) {
+                    const openMins = parseTime(todaySlot.open), closeMins = parseTime(todaySlot.close);
+                    if (now.minuteOfDay >= openMins && now.minuteOfDay < closeMins) return { status: 'open', label: 'Open' };
+                    if (now.minuteOfDay < openMins) return { status: 'closed', label: `Closed until ${fmt12(todaySlot.open)}` };
+                }
+                for (let i = 1; i <= 7; i++) {
+                    const nextDow = (now.dow + i) % 7;
+                    const slot = hours[DAYS[nextDow]];
+                    if (slot) return { status: 'closed', label: `Closed until ${DAY_LABELS[nextDow].slice(0, 3)} ${fmt12(slot.open)}` };
+                }
+                return { status: 'closed', label: 'Closed' };
+            }
+
+            // ── View state ──
+            let all = [];
+            let searchQuery = '';
+            let activeCategory = null;
+            let filterOpenNow = false;
+
+            const listEl = document.getElementById('biz-list');
+            const chipsEl = document.getElementById('biz-chips');
+
+            function renderChips() {
+                const categories = [...new Set(all.map((b) => b.category).filter(Boolean))].sort();
+                chipsEl.innerHTML = '';
+
+                const openChip = document.createElement('button');
+                openChip.type = 'button';
+                openChip.className = 'biz-chip' + (filterOpenNow ? ' active' : '');
+                openChip.textContent = 'Open now';
+                openChip.addEventListener('click', () => { filterOpenNow = !filterOpenNow; renderChips(); render(); });
+                chipsEl.appendChild(openChip);
+
+                categories.forEach((cat) => {
+                    const chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'biz-chip' + (activeCategory === cat ? ' active' : '');
+                    chip.textContent = cat;
+                    chip.addEventListener('click', () => { activeCategory = activeCategory === cat ? null : cat; renderChips(); render(); });
+                    chipsEl.appendChild(chip);
+                });
+            }
+
+            function detailHtml(b) {
+                const hours = b.hours || {}, closedMonths = b.closed_months || [], closures = b.closures || [];
+                const now = nowCT();
+
+                const meta = [];
+                if (b.address) meta.push(`<a href="${esc(mapsUrl(b.address))}" target="_blank" rel="noopener noreferrer">Directions</a>`);
+                if (b.phone) meta.push(`<a href="tel:${esc(b.phone)}">${esc(b.phone)}</a>`);
+                const site = safeUrl(b.website);
+                if (site) meta.push(`<a href="${esc(site)}" target="_blank" rel="noopener noreferrer">Website</a>`);
+
+                const hoursRows = DAYS.map((d, i) => {
+                    const slot = hours[d], today = i === now.dow ? ' today' : '';
+                    const time = slot ? `${fmt12(slot.open)} – ${fmt12(slot.close)}` : 'Closed';
+                    return `<span class="day${today}">${DAY_LABELS[i]}</span><span class="time${today}">${time}</span>`;
+                }).join('');
+
+                return `
+                    ${b.description ? `<p class="biz-desc">${esc(b.description)}</p>` : ''}
+                    ${(b.tags || []).length ? `<div class="biz-tags">${b.tags.map((t) => `<span class="biz-tag">${esc(t)}</span>`).join('')}</div>` : ''}
+                    ${meta.length ? `<div class="biz-meta">${meta.join('')}</div>` : ''}
+                    ${Object.keys(hours).length ? `<div class="biz-hours">${hoursRows}</div>` : ''}
+                    ${closedMonths.length ? `<p class="biz-note">Closed for ${closedMonths.map((m) => MONTH_NAMES[m - 1]).join(', ')}</p>` : ''}
+                    ${closures.length ? `<p class="biz-note">Closed on ${closures.slice().sort().join(', ')}</p>` : ''}`;
+            }
+
+            function itemHtml(b) {
+                const hours = b.hours || {}, closedMonths = b.closed_months || [], closures = b.closures || [];
+                const hasHours = Object.keys(hours).length || closedMonths.length || closures.length;
+                const status = hasHours ? isOpenNow(hours, closedMonths, closures) : null;
+                const hasDetails = hasHours || b.description || b.address || b.phone || b.website || (b.tags || []).length;
+
+                const chevron = hasDetails
+                    ? `<svg class="biz-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="4,6 8,10 12,6"/></svg>`
+                    : '<span class="biz-chevron"></span>';
+
+                return `
+                    <div class="biz-item" data-id="${esc(b.id)}">
+                        <div class="biz-row"${hasDetails ? ' role="button" tabindex="0" aria-expanded="false"' : ''}>
+                            <span class="biz-name">${esc(b.name)}</span>
+                            ${status ? `<span class="biz-status ${status.status}">${esc(status.label)}</span>` : ''}
+                            ${chevron}
+                        </div>
+                        ${hasDetails ? `<div class="biz-detail">${detailHtml(b)}</div>` : ''}
+                    </div>`;
+            }
+
+            function render() {
+                let items = all;
+                if (searchQuery) {
+                    items = items.filter((b) =>
+                        (b.name || '').toLowerCase().includes(searchQuery) ||
+                        (b.category || '').toLowerCase().includes(searchQuery) ||
+                        (b.description || '').toLowerCase().includes(searchQuery));
+                }
+                if (activeCategory) items = items.filter((b) => b.category === activeCategory);
+                if (filterOpenNow) {
+                    items = items.filter((b) => {
+                        const hours = b.hours || {};
+                        if (!Object.keys(hours).length && !(b.closed_months || []).length && !(b.closures || []).length) return false;
+                        return isOpenNow(hours, b.closed_months || [], b.closures || []).status === 'open';
+                    });
+                }
+
+                if (!items.length) {
+                    listEl.innerHTML = '<p class="biz-empty">No businesses match.</p>';
+                    return;
+                }
+
+                // Group by category, preserving the feed's category order.
+                const byCategory = new Map();
+                items.forEach((b) => {
+                    const key = b.category || '';
+                    if (!byCategory.has(key)) byCategory.set(key, []);
+                    byCategory.get(key).push(b);
+                });
+
+                listEl.innerHTML = [...byCategory.entries()].map(([cat, group]) => {
+                    const sorted = group.slice().sort((a, b) => a.name.localeCompare(b.name));
+                    return (cat ? `<div class="biz-cat">${esc(cat)}</div>` : '') + sorted.map(itemHtml).join('');
+                }).join('');
+
+                listEl.querySelectorAll('.biz-item').forEach((item) => {
+                    const row = item.querySelector('.biz-row[role="button"]');
+                    if (!row) return;
+                    const toggle = () => {
+                        const open = item.classList.toggle('expanded');
+                        row.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    };
+                    row.addEventListener('click', toggle);
+                    row.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+                    });
+                });
+            }
+
+            document.getElementById('biz-search').addEventListener('input', (e) => {
+                searchQuery = e.target.value.trim().toLowerCase();
+                render();
+            });
+
+            fetch(FEED)
+                .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+                .then((data) => {
+                    all = (Array.isArray(data) ? data : []).filter((b) => b && b.name);
+                    if (!all.length) return;
+
+                    renderChips();
+                    render();
+                    document.getElementById('businesses').hidden = false;
+                    const link = document.getElementById('businesses-link');
+                    if (link) link.hidden = false;
+                })
+                .catch((err) => console.log('Businesses feed unavailable:', err));
         })();
     </script>
 </body>
