@@ -299,8 +299,6 @@
             position: relative;
             width: 120px;
             height: 120px;
-            padding: 3px;
-            background: var(--ring, #cdd5d0);
             border-radius: 14px;
             filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.18));
         }
@@ -311,7 +309,7 @@
             object-fit: cover;
             display: block;
             background: #dfe3df;
-            border-radius: 11px;
+            border-radius: 14px;
         }
 
         .bird-name {
@@ -352,8 +350,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 18px;
-            height: 18px;
+            width: 23px;
+            height: 23px;
             padding: 0;
             border: none;
             pointer-events: none; /* clicks fall through to the photo */
@@ -364,7 +362,7 @@
             background: rgba(43, 58, 51, 0.62);
             -webkit-backdrop-filter: blur(2px);
             backdrop-filter: blur(2px);
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            border-radius: 50%;
             opacity: 1;
             transition: opacity 0.18s ease, background 0.2s ease, transform 0.2s ease;
         }
@@ -388,7 +386,7 @@
             transform: translate(-50%, -50%) scale(1.1);
         }
 
-        .bird-play svg { width: 10px; height: 10px; fill: currentColor; display: block; }
+        .bird-play svg { width: 13px; height: 13px; fill: currentColor; display: block; }
 
         .bird-play .ico-play,
         .bird-play .ico-pause,
@@ -398,8 +396,8 @@
         .bird-play[data-state="loading"] .ico-spin { display: block; }
 
         .bird-play .ico-spin {
-            width: 10px;
-            height: 10px;
+            width: 13px;
+            height: 13px;
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.4);
             border-top-color: #fff;
@@ -426,9 +424,7 @@
             position: relative;
             width: 84px;
             height: 84px;
-            padding: 3px;
             flex-shrink: 0;
-            background: var(--ring, #cdd5d0);
             border-radius: 12px;
             filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.16));
         }
@@ -439,7 +435,7 @@
             object-fit: cover;
             display: block;
             background: #dfe3df;
-            border-radius: 9px;
+            border-radius: 12px;
         }
 
         .last-bird-info {
@@ -969,7 +965,6 @@
 
                         const thumbWrap = document.createElement('div');
                         thumbWrap.className = 'bird-thumb-wrap';
-                        if (s.color) thumbWrap.style.setProperty('--ring', s.color);
 
                         const img = document.createElement('img');
                         img.className = 'bird-thumb';
@@ -1041,9 +1036,6 @@
                     if (thumb) {
                         img.src = thumb;
                         img.alt = name;
-                        if (species.color) {
-                            el.querySelector('.last-bird-thumb-wrap').style.setProperty('--ring', species.color);
-                        }
                     } else {
                         img.hidden = true;
                     }
