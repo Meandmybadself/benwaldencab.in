@@ -295,14 +295,23 @@
             margin: 0;
         }
 
-        .bird-thumb {
+        .bird-thumb-wrap {
+            position: relative;
             width: 120px;
             height: 120px;
-            border-radius: 50%;
+            padding: 3px;
+            background: var(--ring, #cdd5d0);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.18));
+        }
+
+        .bird-thumb {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border: 3px solid var(--ring, #cdd5d0);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+            display: block;
             background: #dfe3df;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
         }
 
         .bird-name {
@@ -331,6 +340,56 @@
             margin-top: 0.3rem;
         }
 
+        /* Play-call button overlaid on a bird photo */
+        .bird-play {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: rgba(43, 58, 51, 0.55);
+            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px);
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .bird-thumb-wrap:hover .bird-play,
+        .last-bird-thumb-wrap:hover .bird-play {
+            background: rgba(43, 58, 51, 0.72);
+        }
+
+        .bird-play:hover { transform: translate(-50%, -50%) scale(1.06); }
+        .bird-play:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+        .bird-play svg { width: 22px; height: 22px; fill: currentColor; display: block; }
+
+        .bird-play .ico-play,
+        .bird-play .ico-pause,
+        .bird-play .ico-spin { display: none; }
+        .bird-play[data-state="idle"] .ico-play { display: block; }
+        .bird-play[data-state="playing"] .ico-pause { display: block; }
+        .bird-play[data-state="loading"] .ico-spin { display: block; }
+
+        .bird-play .ico-spin {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2.5px solid rgba(255, 255, 255, 0.4);
+            border-top-color: #fff;
+            animation: bird-spin 0.7s linear infinite;
+        }
+
+        @keyframes bird-spin { to { transform: rotate(360deg); } }
+
         /* "Last bird heard" highlight */
         .last-bird {
             max-width: 460px;
@@ -345,15 +404,24 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
         }
 
-        .last-bird-thumb {
+        .last-bird-thumb-wrap {
+            position: relative;
             width: 84px;
             height: 84px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--ring, #cdd5d0);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
-            background: #dfe3df;
+            padding: 3px;
             flex-shrink: 0;
+            background: var(--ring, #cdd5d0);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.16));
+        }
+
+        .last-bird-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            background: #dfe3df;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
         }
 
         .last-bird-info {
@@ -375,7 +443,7 @@
         .last-bird-name {
             font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
             font-weight: 600;
-            font-size: 1.3rem;
+            font-size: 1.625rem; /* 25% larger than 1.3rem */
             line-height: 1.15;
         }
 
@@ -400,7 +468,7 @@
                 gap: 1.75rem 1rem;
             }
 
-            .bird-thumb {
+            .bird-thumb-wrap {
                 width: 92px;
                 height: 92px;
             }
@@ -680,7 +748,14 @@
         <h2 id="birds-heading" class="birds-heading">Heard Birds</h2>
         <p class="birds-sub">Identified by sound around the cabin in the past week</p>
         <div id="last-bird" class="last-bird" hidden>
-            <img class="last-bird-thumb" alt="" width="84" height="84" loading="lazy">
+            <div class="last-bird-thumb-wrap">
+                <img class="last-bird-thumb" alt="" width="84" height="84" loading="lazy">
+                <button class="bird-play" type="button" data-state="idle" aria-label="Play the last bird's call" hidden>
+                    <svg class="ico-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                    <svg class="ico-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+                    <span class="ico-spin" aria-hidden="true"></span>
+                </button>
+            </div>
             <div class="last-bird-info">
                 <span class="last-bird-label">Last bird heard</span>
                 <span class="last-bird-name"></span>
@@ -741,6 +816,102 @@
             return 'on ' + new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
 
+        // Single shared audio player for bird calls. Only one clip plays at a
+        // time; the button that owns the current clip reflects loading/playing
+        // state and toggles back to idle when the clip stops. Reusing one <audio>
+        // element keeps it "blessed" for playback after the first user gesture
+        // (needed on iOS Safari). `resolver` returns { url, startTime, endTime }
+        // (or a promise for it) so grid cards can fetch their clip lazily.
+        const BirdAudio = (function () {
+            let audio = null;
+            let activeBtn = null;
+            let stopAt = Infinity;
+
+            function setState(btn, state) { if (btn) btn.dataset.state = state; }
+
+            function stop() {
+                if (audio) { audio.pause(); audio.removeAttribute('src'); audio.load(); }
+                setState(activeBtn, 'idle');
+                activeBtn = null;
+                stopAt = Infinity;
+            }
+
+            function ensureAudio() {
+                if (audio) return audio;
+                audio = new Audio();
+                audio.preload = 'auto';
+                audio.addEventListener('timeupdate', () => {
+                    if (audio.currentTime >= stopAt) stop();
+                });
+                audio.addEventListener('playing', () => setState(activeBtn, 'playing'));
+                audio.addEventListener('ended', stop);
+                audio.addEventListener('error', stop);
+                return audio;
+            }
+
+            function playClip(btn, clip) {
+                const a = ensureAudio();
+                activeBtn = btn;
+                const start = Number(clip.startTime) || 0;
+                const end = Number(clip.endTime);
+                stopAt = (Number.isFinite(end) && end > start) ? end : Infinity;
+                a.src = clip.url;
+                if (start > 0) {
+                    a.addEventListener('loadedmetadata', () => {
+                        try { a.currentTime = start; } catch (e) { /* ignore */ }
+                    }, { once: true });
+                }
+                a.play().catch(() => stop());
+            }
+
+            async function toggle(btn, resolver) {
+                if (activeBtn === btn) { stop(); return; }
+                stop();
+                setState(btn, 'loading');
+                activeBtn = btn; // claim now so a later click can supersede/cancel
+                let clip = null;
+                try { clip = await resolver(); } catch (e) { clip = null; }
+                if (activeBtn !== btn) return; // superseded or cancelled while loading
+                if (!clip || !clip.url) { setState(btn, 'idle'); activeBtn = null; return; }
+                playClip(btn, clip);
+            }
+
+            return { toggle, stop };
+        })();
+
+        // Build a play-call button (idle/loading/playing states via CSS).
+        function makePlayButton(label) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'bird-play';
+            btn.dataset.state = 'idle';
+            btn.setAttribute('aria-label', label);
+            btn.innerHTML =
+                '<svg class="ico-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>' +
+                '<svg class="ico-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>' +
+                '<span class="ico-spin" aria-hidden="true"></span>';
+            return btn;
+        }
+
+        // Fetch the latest detection's soundscape for a species (cached on the
+        // button after the first lookup so replays don't refetch).
+        function resolveSpeciesClip(btn) {
+            if (btn.dataset.clipUrl) {
+                return { url: btn.dataset.clipUrl, startTime: btn.dataset.clipStart, endTime: btn.dataset.clipEnd };
+            }
+            const id = btn.dataset.speciesId;
+            return fetch('https://birdweather.benwaldencab.in/detections?speciesId=' + encodeURIComponent(id) + '&limit=1')
+                .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+                .then((data) => {
+                    const ss = data && data.detections && data.detections[0] && data.detections[0].soundscape;
+                    if (!ss || !ss.url) return null;
+                    btn.dataset.clipUrl = ss.url;
+                    btn.dataset.clipStart = ss.startTime || 0;
+                    btn.dataset.clipEnd = ss.endTime || 0;
+                    return { url: ss.url, startTime: ss.startTime, endTime: ss.endTime };
+                });
+        }
+
         // Populate "Birds heard this week" from the BirdWeather proxy feed.
         // The section stays hidden unless the feed loads with birds, so the
         // page degrades to the plain splash if the feed is unavailable.
@@ -761,20 +932,34 @@
                         const card = document.createElement('figure');
                         card.className = 'bird-card';
 
+                        const displayName = s.commonName || s.scientificName || 'Unknown bird';
+
+                        const thumbWrap = document.createElement('div');
+                        thumbWrap.className = 'bird-thumb-wrap';
+                        if (s.color) thumbWrap.style.setProperty('--ring', s.color);
+
                         const img = document.createElement('img');
                         img.className = 'bird-thumb';
                         img.src = s.thumbnailUrl;
-                        img.alt = s.commonName || s.scientificName || 'Bird';
+                        img.alt = displayName;
                         img.loading = 'lazy';
                         img.width = 120;
                         img.height = 120;
-                        if (s.color) img.style.setProperty('--ring', s.color);
+                        thumbWrap.append(img);
+
+                        // Play the species' latest recorded call on demand.
+                        if (s.id != null) {
+                            const play = makePlayButton('Play the call of ' + displayName);
+                            play.dataset.speciesId = s.id;
+                            play.addEventListener('click', () => BirdAudio.toggle(play, () => resolveSpeciesClip(play)));
+                            thumbWrap.append(play);
+                        }
 
                         const name = document.createElement('figcaption');
                         name.className = 'bird-name';
-                        name.textContent = s.commonName || s.scientificName || 'Unknown bird';
+                        name.textContent = displayName;
 
-                        card.append(img, name);
+                        card.append(thumbWrap, name);
 
                         // Show the scientific name in italics when it adds info
                         // (skip if it's the only name we have and already shown).
@@ -823,9 +1008,27 @@
                     if (thumb) {
                         img.src = thumb;
                         img.alt = name;
-                        if (species.color) img.style.setProperty('--ring', species.color);
+                        if (species.color) {
+                            el.querySelector('.last-bird-thumb-wrap').style.setProperty('--ring', species.color);
+                        }
                     } else {
                         img.hidden = true;
+                    }
+
+                    // The detection already carries its soundscape — wire up play.
+                    const playBtn = el.querySelector('.bird-play');
+                    const ss = detection.soundscape;
+                    if (playBtn && ss && ss.url) {
+                        playBtn.setAttribute('aria-label', 'Play the call of ' + name);
+                        playBtn.dataset.clipUrl = ss.url;
+                        playBtn.dataset.clipStart = ss.startTime || 0;
+                        playBtn.dataset.clipEnd = ss.endTime || 0;
+                        playBtn.hidden = false;
+                        playBtn.addEventListener('click', () => BirdAudio.toggle(playBtn, () => ({
+                            url: playBtn.dataset.clipUrl,
+                            startTime: playBtn.dataset.clipStart,
+                            endTime: playBtn.dataset.clipEnd,
+                        })));
                     }
 
                     el.querySelector('.last-bird-name').textContent = name;
