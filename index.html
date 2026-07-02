@@ -301,7 +301,7 @@
             height: 120px;
             padding: 3px;
             background: var(--ring, #cdd5d0);
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            border-radius: 14px;
             filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.18));
         }
 
@@ -311,7 +311,7 @@
             object-fit: cover;
             display: block;
             background: #dfe3df;
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            border-radius: 11px;
         }
 
         .bird-name {
@@ -340,37 +340,55 @@
             margin-top: 0.3rem;
         }
 
-        /* Play-call button overlaid on a bird photo */
+        /* The whole photo is the click target for playback (.has-audio). The
+           small diamond is just a visual affordance: hidden until the photo is
+           hovered (or focused / actively playing) on hover-capable devices, and
+           always shown on touch devices, which can't hover. */
+        .bird-thumb-wrap.has-audio,
+        .last-bird-thumb-wrap.has-audio { cursor: pointer; }
+
         .bird-play {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 44px;
-            height: 44px;
+            width: 18px;
+            height: 18px;
             padding: 0;
             border: none;
-            border-radius: 50%;
-            cursor: pointer;
+            pointer-events: none; /* clicks fall through to the photo */
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            background: rgba(43, 58, 51, 0.55);
+            background: rgba(43, 58, 51, 0.62);
             -webkit-backdrop-filter: blur(2px);
             backdrop-filter: blur(2px);
-            transition: background 0.2s ease, transform 0.2s ease;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            opacity: 1;
+            transition: opacity 0.18s ease, background 0.2s ease, transform 0.2s ease;
+        }
+
+        @media (hover: hover) {
+            .bird-play { opacity: 0; }
+
+            .bird-thumb-wrap:hover .bird-play,
+            .last-bird-thumb-wrap:hover .bird-play,
+            .bird-thumb-wrap:focus-visible .bird-play,
+            .last-bird-thumb-wrap:focus-visible .bird-play,
+            .bird-play[data-state="loading"],
+            .bird-play[data-state="playing"] {
+                opacity: 1;
+            }
         }
 
         .bird-thumb-wrap:hover .bird-play,
         .last-bird-thumb-wrap:hover .bird-play {
-            background: rgba(43, 58, 51, 0.72);
+            background: rgba(43, 58, 51, 0.82);
+            transform: translate(-50%, -50%) scale(1.1);
         }
 
-        .bird-play:hover { transform: translate(-50%, -50%) scale(1.06); }
-        .bird-play:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-
-        .bird-play svg { width: 22px; height: 22px; fill: currentColor; display: block; }
+        .bird-play svg { width: 10px; height: 10px; fill: currentColor; display: block; }
 
         .bird-play .ico-play,
         .bird-play .ico-pause,
@@ -380,10 +398,10 @@
         .bird-play[data-state="loading"] .ico-spin { display: block; }
 
         .bird-play .ico-spin {
-            width: 20px;
-            height: 20px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            border: 2.5px solid rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-top-color: #fff;
             animation: bird-spin 0.7s linear infinite;
         }
@@ -411,7 +429,7 @@
             padding: 3px;
             flex-shrink: 0;
             background: var(--ring, #cdd5d0);
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            border-radius: 12px;
             filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.16));
         }
 
@@ -421,7 +439,7 @@
             object-fit: cover;
             display: block;
             background: #dfe3df;
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            border-radius: 9px;
         }
 
         .last-bird-info {
@@ -750,11 +768,11 @@
         <div id="last-bird" class="last-bird" hidden>
             <div class="last-bird-thumb-wrap">
                 <img class="last-bird-thumb" alt="" width="84" height="84" loading="lazy">
-                <button class="bird-play" type="button" data-state="idle" aria-label="Play the last bird's call" hidden>
+                <span class="bird-play" data-state="idle" aria-hidden="true" hidden>
                     <svg class="ico-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
                     <svg class="ico-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
                     <span class="ico-spin" aria-hidden="true"></span>
-                </button>
+                </span>
             </div>
             <div class="last-bird-info">
                 <span class="last-bird-label">Last bird heard</span>
@@ -879,18 +897,33 @@
             return { toggle, stop };
         })();
 
-        // Build a play-call button (idle/loading/playing states via CSS).
-        function makePlayButton(label) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'bird-play';
-            btn.dataset.state = 'idle';
-            btn.setAttribute('aria-label', label);
-            btn.innerHTML =
+        // Build the decorative play indicator (idle/loading/playing via CSS).
+        // It is not the click target — the whole photo is (see wireHotspot).
+        function makePlayIndicator() {
+            const ind = document.createElement('span');
+            ind.className = 'bird-play';
+            ind.dataset.state = 'idle';
+            ind.setAttribute('aria-hidden', 'true');
+            ind.innerHTML =
                 '<svg class="ico-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>' +
                 '<svg class="ico-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>' +
                 '<span class="ico-spin" aria-hidden="true"></span>';
-            return btn;
+            return ind;
+        }
+
+        // Make a whole photo wrapper the click/keyboard target for playback,
+        // driving the given indicator. `resolver` yields { url, startTime,
+        // endTime } (or a promise for it).
+        function wireHotspot(wrap, indicator, label, resolver) {
+            wrap.classList.add('has-audio');
+            wrap.setAttribute('role', 'button');
+            wrap.setAttribute('tabindex', '0');
+            wrap.setAttribute('aria-label', label);
+            const trigger = () => BirdAudio.toggle(indicator, resolver);
+            wrap.addEventListener('click', trigger);
+            wrap.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger(); }
+            });
         }
 
         // Fetch the latest detection's soundscape for a species (cached on the
@@ -947,12 +980,12 @@
                         img.height = 120;
                         thumbWrap.append(img);
 
-                        // Play the species' latest recorded call on demand.
+                        // Click the photo to play the species' latest recorded call.
                         if (s.id != null) {
-                            const play = makePlayButton('Play the call of ' + displayName);
+                            const play = makePlayIndicator();
                             play.dataset.speciesId = s.id;
-                            play.addEventListener('click', () => BirdAudio.toggle(play, () => resolveSpeciesClip(play)));
                             thumbWrap.append(play);
+                            wireHotspot(thumbWrap, play, 'Play the call of ' + displayName, () => resolveSpeciesClip(play));
                         }
 
                         const name = document.createElement('figcaption');
@@ -1015,20 +1048,20 @@
                         img.hidden = true;
                     }
 
-                    // The detection already carries its soundscape — wire up play.
-                    const playBtn = el.querySelector('.bird-play');
+                    // The detection already carries its soundscape — wire the
+                    // whole photo to play it.
+                    const playInd = el.querySelector('.bird-play');
                     const ss = detection.soundscape;
-                    if (playBtn && ss && ss.url) {
-                        playBtn.setAttribute('aria-label', 'Play the call of ' + name);
-                        playBtn.dataset.clipUrl = ss.url;
-                        playBtn.dataset.clipStart = ss.startTime || 0;
-                        playBtn.dataset.clipEnd = ss.endTime || 0;
-                        playBtn.hidden = false;
-                        playBtn.addEventListener('click', () => BirdAudio.toggle(playBtn, () => ({
-                            url: playBtn.dataset.clipUrl,
-                            startTime: playBtn.dataset.clipStart,
-                            endTime: playBtn.dataset.clipEnd,
-                        })));
+                    if (playInd && ss && ss.url) {
+                        playInd.dataset.clipUrl = ss.url;
+                        playInd.dataset.clipStart = ss.startTime || 0;
+                        playInd.dataset.clipEnd = ss.endTime || 0;
+                        playInd.hidden = false;
+                        wireHotspot(el.querySelector('.last-bird-thumb-wrap'), playInd, 'Play the call of ' + name, () => ({
+                            url: playInd.dataset.clipUrl,
+                            startTime: playInd.dataset.clipStart,
+                            endTime: playInd.dataset.clipEnd,
+                        }));
                     }
 
                     el.querySelector('.last-bird-name').textContent = name;
