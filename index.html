@@ -331,6 +331,69 @@
             margin-top: 0.3rem;
         }
 
+        /* "Last bird heard" highlight */
+        .last-bird {
+            max-width: 460px;
+            margin: 2.5rem auto 0;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 1.1rem 1.4rem;
+            background: #f4f2ec;
+            border: 1px solid #ded9cd;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .last-bird-thumb {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--ring, #cdd5d0);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+            background: #dfe3df;
+            flex-shrink: 0;
+        }
+
+        .last-bird-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            min-width: 0;
+        }
+
+        .last-bird-label {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.68rem;
+            color: #8a958c;
+            margin-bottom: 0.2rem;
+        }
+
+        .last-bird-name {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            line-height: 1.15;
+        }
+
+        .last-bird-sci {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-style: italic;
+            font-size: 0.9rem;
+            color: #74837a;
+            margin-top: 0.12rem;
+        }
+
+        .last-bird-time {
+            font-family: "Work Sans", "Ringside Narrow A", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.78rem;
+            color: #7a8880;
+            margin-top: 0.4rem;
+        }
+
         @media (max-width: 480px) {
             .birds-grid {
                 grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
@@ -616,6 +679,15 @@
     <section id="birds" class="birds-section" aria-labelledby="birds-heading" hidden>
         <h2 id="birds-heading" class="birds-heading">Heard Birds</h2>
         <p class="birds-sub">Identified by sound around the cabin in the past week</p>
+        <div id="last-bird" class="last-bird" hidden>
+            <img class="last-bird-thumb" alt="" width="84" height="84" loading="lazy">
+            <div class="last-bird-info">
+                <span class="last-bird-label">Last bird heard</span>
+                <span class="last-bird-name"></span>
+                <span class="last-bird-sci"></span>
+                <span class="last-bird-time"></span>
+            </div>
+        </div>
         <p class="birds-credit">Captured with <a href="https://www.birdweather.com/birdnetpi" target="_blank" rel="noopener noreferrer">BirdNET Pi</a> with data stored with <a href="https://app.birdweather.com/stations/28413" target="_blank" rel="noopener noreferrer">Birdweather</a>.</p>
         <div id="birds-grid" class="birds-grid"></div>
     </section>
@@ -639,6 +711,35 @@
                 console.log('Audio playback failed:', error);
             });
         });
+
+        // Reveal the birds section (and its hero scroll-link) once any of its
+        // feeds loads. Either the weekly grid or the "last bird heard" highlight
+        // is enough to surface the section.
+        function revealBirds() {
+            const section = document.getElementById('birds');
+            if (section) section.hidden = false;
+            const link = document.getElementById('birds-link');
+            if (link) link.hidden = false;
+        }
+
+        // Human-friendly relative time as a lowercase fragment ("just now",
+        // "yesterday", "on Jul 1") for use after a word like "Heard". The
+        // timestamp carries its own UTC offset, so Date parses it to an absolute
+        // instant and the diff is timezone-safe.
+        function timeAgo(iso) {
+            const then = new Date(iso).getTime();
+            if (!Number.isFinite(then)) return '';
+            const secs = Math.max(0, Math.round((Date.now() - then) / 1000));
+            if (secs < 45) return 'just now';
+            const mins = Math.round(secs / 60);
+            if (mins < 60) return mins <= 1 ? 'a minute ago' : mins + ' minutes ago';
+            const hrs = Math.round(mins / 60);
+            if (hrs < 24) return hrs <= 1 ? 'an hour ago' : hrs + ' hours ago';
+            const days = Math.round(hrs / 24);
+            if (days <= 1) return 'yesterday';
+            if (days < 7) return days + ' days ago';
+            return 'on ' + new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
 
         // Populate "Birds heard this week" from the BirdWeather proxy feed.
         // The section stays hidden unless the feed loads with birds, so the
@@ -696,11 +797,55 @@
                     });
 
                     grid.append(frag);
-                    document.getElementById('birds').hidden = false;
-                    const birdsLink = document.getElementById('birds-link');
-                    if (birdsLink) birdsLink.hidden = false;
+                    revealBirds();
                 })
                 .catch((err) => console.log('Birds feed unavailable:', err));
+        })();
+
+        // Populate the "Last bird heard" highlight from the most recent
+        // detection. Independent of the weekly grid, so the section surfaces even
+        // if the weekly species feed is empty.
+        (function loadLastBird() {
+            const FEED = 'https://birdweather.benwaldencab.in/detections?limit=1';
+
+            fetch(FEED)
+                .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+                .then((data) => {
+                    const detection = data && data.detections && data.detections[0];
+                    const species = detection && detection.species;
+                    if (!detection || !species) return;
+
+                    const el = document.getElementById('last-bird');
+                    const img = el.querySelector('.last-bird-thumb');
+                    const thumb = species.thumbnailUrl || species.imageUrl;
+                    const name = species.commonName || species.scientificName || 'Unknown bird';
+
+                    if (thumb) {
+                        img.src = thumb;
+                        img.alt = name;
+                        if (species.color) img.style.setProperty('--ring', species.color);
+                    } else {
+                        img.hidden = true;
+                    }
+
+                    el.querySelector('.last-bird-name').textContent = name;
+
+                    const sci = el.querySelector('.last-bird-sci');
+                    if (species.scientificName && species.scientificName !== name) {
+                        sci.textContent = species.scientificName;
+                    } else {
+                        sci.hidden = true;
+                    }
+
+                    const time = el.querySelector('.last-bird-time');
+                    const label = timeAgo(detection.timestamp);
+                    if (label) time.textContent = 'Heard ' + label;
+                    else time.hidden = true;
+
+                    el.hidden = false;
+                    revealBirds();
+                })
+                .catch((err) => console.log('Last bird unavailable:', err));
         })();
 
         // Populate "Local Businesses" from the Cabin OS public feed. Like the
