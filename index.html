@@ -234,6 +234,160 @@
             }
         }
 
+        /* "Cabin Weather" section */
+        .weather-section {
+            background: #e8edee;
+            color: #2b3a33;
+            padding: 4.5rem 1.5rem 5.5rem;
+        }
+
+        .weather-heading {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-weight: 600;
+            font-size: clamp(2rem, 5vw, 3rem);
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .weather-sub {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.78rem;
+            text-align: center;
+            color: #74837a;
+            margin-top: 0.7rem;
+        }
+
+        .weather-current {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 2.5rem 3.5rem;
+            max-width: 760px;
+            margin: 2.75rem auto 0;
+        }
+
+        .weather-now {
+            display: flex;
+            align-items: center;
+            gap: 1.1rem;
+        }
+
+        .weather-emoji {
+            font-size: 3.75rem;
+            line-height: 1;
+        }
+
+        .weather-temp-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .weather-temp {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-weight: 600;
+            font-size: 3.25rem;
+            line-height: 1;
+        }
+
+        .weather-cond {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 1rem;
+            margin-top: 0.35rem;
+        }
+
+        .weather-feels {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.85rem;
+            color: #74837a;
+            margin-top: 0.15rem;
+        }
+
+        .weather-stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(6.5rem, auto));
+            gap: 0.9rem 2.25rem;
+            margin: 0;
+        }
+
+        .weather-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .weather-stat dt {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.68rem;
+            color: #74837a;
+        }
+
+        .weather-stat dd {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 1.15rem;
+            margin: 0.1rem 0 0;
+        }
+
+        .weather-forecast {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            max-width: 760px;
+            margin: 3rem auto 0;
+        }
+
+        .wx-day {
+            flex: 1 1 5.5rem;
+            max-width: 8rem;
+            background: rgba(255, 255, 255, 0.55);
+            border-radius: 12px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+        }
+
+        .wx-day-name {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.7rem;
+            color: #74837a;
+        }
+
+        .wx-day-emoji {
+            font-size: 1.75rem;
+            line-height: 1;
+            margin: 0.5rem 0;
+        }
+
+        .wx-day-temps {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .wx-day-hi { font-weight: 500; }
+        .wx-day-lo { color: #8a958c; }
+
+        .weather-credit {
+            font-family: "Work Sans", "Ringside Narrow A", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            text-align: center;
+            color: #8a958c;
+            margin: 3rem auto 0;
+            max-width: 34rem;
+        }
+
+        .weather-credit a { color: inherit; }
+
+        @media (max-width: 480px) {
+            .weather-current { gap: 2rem; }
+            .weather-stats { grid-template-columns: repeat(2, minmax(6rem, 1fr)); width: 100%; max-width: 20rem; }
+        }
+
         /* "Birds heard this week" section */
         .birds-section {
             background: #ece9e1;
@@ -737,6 +891,11 @@
                         <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
                     </svg>
                 </a>
+                <a href="#weather" id="weather-link" class="icon-link" aria-label="Jump to current weather" hidden>
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
+                    </svg>
+                </a>
                 <a href="#birds" id="birds-link" class="icon-link" aria-label="Jump to birds heard this week" hidden>
                     <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M236.44,73.34,213.21,57.86A60,60,0,0,0,156,16h-.29C122.79,16.16,96,43.47,96,76.89V96.63L11.63,197.88l-.1.12A16,16,0,0,0,24,224h88A104.11,104.11,0,0,0,216,120V100.28l20.44-13.62a8,8,0,0,0,0-13.32ZM126.15,133.12l-60,72a8,8,0,1,1-12.29-10.24l60-72a8,8,0,1,1,12.29,10.24ZM164,80a12,12,0,1,1,12-12A12,12,0,0,1,164,80Z"/>
@@ -751,6 +910,24 @@
 
         </div>
     </div>
+
+    <section id="weather" class="weather-section" aria-labelledby="weather-heading" hidden>
+        <h2 id="weather-heading" class="weather-heading">Cabin Weather</h2>
+        <p class="weather-sub">Live conditions on the Gunflint Trail</p>
+        <div class="weather-current">
+            <div class="weather-now">
+                <span class="weather-emoji" id="wx-emoji" aria-hidden="true"></span>
+                <div class="weather-temp-wrap">
+                    <span class="weather-temp" id="wx-temp"></span>
+                    <span class="weather-cond" id="wx-cond"></span>
+                    <span class="weather-feels" id="wx-feels"></span>
+                </div>
+            </div>
+            <dl class="weather-stats" id="wx-stats"></dl>
+        </div>
+        <div class="weather-forecast" id="wx-forecast"></div>
+        <p class="weather-credit">Measured with a <a href="https://tempest.earth/" target="_blank" rel="noopener noreferrer">WeatherFlow Tempest</a> station at the cabin.</p>
+    </section>
 
     <section id="birds" class="birds-section" aria-labelledby="birds-heading" hidden>
         <h2 id="birds-heading" class="birds-heading">Heard Birds</h2>
@@ -804,6 +981,101 @@
             const link = document.getElementById('birds-link');
             if (link) link.hidden = false;
         }
+
+        // Populate "Cabin Weather" from the Tempest proxy's forecast endpoint.
+        // Like the birds feed, the section stays hidden unless the fetch succeeds,
+        // so the page degrades gracefully to the plain splash when it's offline.
+        (function loadWeather() {
+            const FEED = 'https://weather.benwaldencab.in/forecast'
+                + '?units_temp=f&units_wind=mph&units_pressure=inhg&units_precip=in&units_distance=mi';
+
+            // WeatherFlow condition icons → emoji, so the display stays self-contained.
+            const WX_EMOJI = {
+                'clear-day': '☀️', 'clear-night': '🌙', 'cloudy': '☁️', 'foggy': '🌫️',
+                'partly-cloudy-day': '⛅', 'partly-cloudy-night': '☁️',
+                'possibly-rainy-day': '🌦️', 'possibly-rainy-night': '🌧️',
+                'possibly-sleet-day': '🌨️', 'possibly-sleet-night': '🌨️',
+                'possibly-snow-day': '🌨️', 'possibly-snow-night': '🌨️',
+                'possibly-thunderstorm-day': '⛈️', 'possibly-thunderstorm-night': '⛈️',
+                'rainy': '🌧️', 'sleet': '🌨️', 'snow': '❄️', 'thunderstorm': '⛈️', 'windy': '💨'
+            };
+            const emojiFor = (icon) => WX_EMOJI[icon] || '🌡️';
+            const round = (n) => (Number.isFinite(n) ? Math.round(n) : null);
+            const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+            fetch(FEED)
+                .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+                .then((data) => {
+                    const cc = data && data.current_conditions;
+                    if (!cc) return;
+
+                    const degree = (data.units && data.units.units_temp === 'c') ? '°C' : '°F';
+
+                    const temp = round(cc.air_temperature);
+                    document.getElementById('wx-temp').textContent = temp == null ? '' : temp + degree;
+                    document.getElementById('wx-emoji').textContent = emojiFor(cc.icon);
+                    document.getElementById('wx-cond').textContent = cc.conditions || '';
+
+                    const feels = round(cc.feels_like);
+                    const feelsEl = document.getElementById('wx-feels');
+                    if (feels != null && feels !== temp) feelsEl.textContent = 'Feels like ' + feels + degree;
+
+                    // Build the stat row from whichever fields are present.
+                    const stats = [];
+                    if (Number.isFinite(cc.wind_avg)) {
+                        const dir = cc.wind_direction_cardinal ? ' ' + cc.wind_direction_cardinal : '';
+                        stats.push(['Wind', round(cc.wind_avg) + ' mph' + dir]);
+                    }
+                    if (Number.isFinite(cc.relative_humidity)) stats.push(['Humidity', round(cc.relative_humidity) + '%']);
+                    if (Number.isFinite(cc.precip_probability)) stats.push(['Rain Chance', round(cc.precip_probability) + '%']);
+                    if (Number.isFinite(cc.sea_level_pressure)) stats.push(['Pressure', cc.sea_level_pressure.toFixed(2) + ' inHg']);
+
+                    const statsEl = document.getElementById('wx-stats');
+                    stats.forEach(([label, value]) => {
+                        const wrap = document.createElement('div');
+                        wrap.className = 'weather-stat';
+                        const dt = document.createElement('dt');
+                        dt.textContent = label;
+                        const dd = document.createElement('dd');
+                        dd.textContent = value;
+                        wrap.append(dt, dd);
+                        statsEl.append(wrap);
+                    });
+
+                    // Multi-day outlook: skip today, show the next few days.
+                    const daily = (data.forecast && data.forecast.daily) || [];
+                    const fcEl = document.getElementById('wx-forecast');
+                    daily.slice(1, 6).forEach((day) => {
+                        const card = document.createElement('div');
+                        card.className = 'wx-day';
+
+                        const name = document.createElement('div');
+                        name.className = 'wx-day-name';
+                        const ts = day.day_start_local;
+                        name.textContent = Number.isFinite(ts) ? WEEKDAYS[new Date(ts * 1000).getDay()] : '';
+
+                        const emoji = document.createElement('div');
+                        emoji.className = 'wx-day-emoji';
+                        emoji.textContent = emojiFor(day.icon);
+
+                        const temps = document.createElement('div');
+                        temps.className = 'wx-day-temps';
+                        const hi = round(day.air_temp_high);
+                        const lo = round(day.air_temp_low);
+                        temps.innerHTML = '<span class="wx-day-hi">' + (hi == null ? '' : hi + '°') + '</span> '
+                            + '<span class="wx-day-lo">' + (lo == null ? '' : lo + '°') + '</span>';
+
+                        card.append(name, emoji, temps);
+                        fcEl.append(card);
+                    });
+
+                    const section = document.getElementById('weather');
+                    if (section) section.hidden = false;
+                    const link = document.getElementById('weather-link');
+                    if (link) link.hidden = false;
+                })
+                .catch((err) => console.log('Weather feed unavailable:', err));
+        })();
 
         // Human-friendly relative time as a lowercase fragment ("just now",
         // "yesterday", "on Jul 1") for use after a word like "Heard". The
