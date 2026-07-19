@@ -1,0 +1,57 @@
+{
+  "//": "Curated Gunflint Trail hikes. Edit this list, then run ./build-trails.sh to regenerate trails.json.",
+  "//kind": "'way' matches all path segments with this name; 'relation' pulls an OSM route relation.",
+  "//osm_name": "OSM name to match (defaults to name). 'trailhead' optional [lat, lon] override.",
+  "bbox": [47.6, -91.2, 48.2, -90.0],
+  "sample_points": 48,
+  "trails": [
+    {
+      "name": "Magnetic Rock Trail",
+      "kind": "way",
+      "difficulty": "Moderate",
+      "blurb": "Out-and-back past glacial erratics to a 25-foot magnetic monolith that deflects a compass. Open, rocky, and burned-over in stretches with big sky views."
+    },
+    {
+      "name": "Honeymoon Bluff Trail",
+      "kind": "way",
+      "difficulty": "Easy",
+      "blurb": "Short, steep stair-climb to a bluff overlooking Hungry Jack and West Bearskin Lakes. A classic sunset spot near the Clearwater Road."
+    },
+    {
+      "name": "Caribou Rock Trail",
+      "kind": "way",
+      "difficulty": "Moderate",
+      "blurb": "Ridge-top overlooks of Bearskin, Duncan, and Moss Lakes. Turn around at the first vista or push on toward Stairway Portage."
+    },
+    {
+      "name": "Centennial Trail",
+      "kind": "relation",
+      "difficulty": "Easy",
+      "blurb": "Interpretive loop through the 1999 blowdown and regrowth near the Gunflint Ranger Station, with boardwalks over wetland."
+    },
+    {
+      "name": "Border Route Trail",
+      "kind": "relation",
+      "difficulty": "Strenuous",
+      "blurb": "Rugged 65-mile ridgeline route along the Canadian border, linking cliff-top lake overlooks across the highlands. Best sampled in day sections."
+    },
+    {
+      "name": "Kekekabic Trail",
+      "kind": "relation",
+      "difficulty": "Strenuous",
+      "blurb": "Remote 40-mile wilderness traverse from the Gunflint Trail west toward Ely, deep into the Boundary Waters backcountry."
+    },
+    {
+      "name": "Eagle Mountain Trail",
+      "kind": "relation",
+      "difficulty": "Moderate",
+      "blurb": "The path to Minnesota's highest point (2,301 ft), passing Whale Lake through boreal forest and rock. A Superior National Forest classic."
+    },
+    {
+      "name": "Pincushion Mountain Loop",
+      "kind": "way",
+      "difficulty": "Moderate",
+      "blurb": "Network of loops on the Sawtooth ridge above Grand Marais, with a short spur to a granite dome overlooking Lake Superior."
+    }
+  ]
+}

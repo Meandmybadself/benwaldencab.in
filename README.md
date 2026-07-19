@@ -9,6 +9,7 @@ https://benwaldencab.in
 - `index.html` — the main page (self-contained: inline CSS + JS).
 - `trailcam/` — trail-camera photo gallery. **`trailcam/index.html` is generated** — edit `build-trailcam.sh`, not the HTML.
 - `sw.js` — service worker (offline support + caching).
+- `trails.config.json` / `trails.json` — curated nearby-hikes config and its generated data (see below).
 - `bg.webp`, `looncallalert.mp3` — hero image and loon-call audio.
 
 ## Live data feeds
@@ -40,6 +41,30 @@ On install it **precaches the app shell** — both pages, `bg.webp`, the audio, 
 ```
 
 Scans `trailcam/images/`, converts any non-WebP images to WebP (needs `cwebp`), regenerates `trailcam/index.html`, **and syncs the trail-cam image list into `sw.js`'s precache** (the block between the `trailcam-images:start` / `:end` markers — do not edit it by hand). Run it after adding or removing images. CI also runs it via `.github/workflows/build-trailcam.yml`.
+
+## Nearby trails
+
+The "Trails Nearby" section on the home page renders an offline SVG map of
+trailheads along the Gunflint Trail plus a card per trail (distance, elevation
+gain, and an elevation sparkline). It reads a committed, precached `trails.json`
+— no runtime API calls.
+
+Edit the curated list in **`trails.config.json`** (add/remove a trail, tweak a
+blurb or difficulty), then regenerate:
+
+```sh
+./build-trails.sh          # needs network + python3
+```
+
+This runs `build-trails.py`, which pulls each trail's path geometry from
+**OpenStreetMap** (one combined Overpass query) and samples elevation from
+open-elevation (USGS 3DEP / SRTM fallback), then writes `trails.json`. Long
+thru-hikes (Border Route, Kekekabic) are clipped to the corridor bbox so the map
+stays focused; their distances come from the official OSM `distance` tag.
+
+Trail geometry is © OpenStreetMap contributors (ODbL) — the attribution line in
+the section and `trails.json` must stay. `trails.json` is precached by the
+service worker, so bump `CACHE_VERSION` in `sw.js` after regenerating it.
 
 ## Local development
 
