@@ -357,6 +357,15 @@ def main():
         chain = stitch(segments)
         trailhead = t.get("trailhead") or nearest_endpoint(chain, road)
 
+        # If a trailhead sits far off the Gunflint Trail (reached by forest
+        # road), record the nearest road point so the map can draw a dashed
+        # "access" connector instead of leaving the trail floating.
+        access = None
+        if road:
+            near = min(road, key=lambda r: haversine(trailhead, r))
+            if haversine(trailhead, near) > 3000:
+                access = [round(near[0], 5), round(near[1], 5)]
+
         sampled = resample(chain, n_samples)
         print(f"  sampling elevation at {len(sampled)} points...")
         elev_m = elevations(sampled)
@@ -367,20 +376,21 @@ def main():
                 all_lat.append(p[0])
                 all_lon.append(p[1])
 
-        out_trails.append(
-            {
-                "name": t["name"],
-                "difficulty": t.get("difficulty", ""),
-                "blurb": t.get("blurb", ""),
-                "distance_mi": distance_mi,
-                "official_distance": bool(official),
-                "gain_ft": int(round(gain_ft(elev_m))),
-                "trailhead": [round(trailhead[0], 5), round(trailhead[1], 5)],
-                "segments": [[[round(p[0], 5), round(p[1], 5)] for p in s] for s in simplified],
-                "elevation": [int(round(e * 3.28084)) for e in elev_m],
-            }
-        )
-        print(f"  {distance_mi} mi, +{out_trails[-1]['gain_ft']} ft")
+        entry = {
+            "name": t["name"],
+            "difficulty": t.get("difficulty", ""),
+            "blurb": t.get("blurb", ""),
+            "distance_mi": distance_mi,
+            "official_distance": bool(official),
+            "gain_ft": int(round(gain_ft(elev_m))),
+            "trailhead": [round(trailhead[0], 5), round(trailhead[1], 5)],
+            "segments": [[[round(p[0], 5), round(p[1], 5)] for p in s] for s in simplified],
+            "elevation": [int(round(e * 3.28084)) for e in elev_m],
+        }
+        if access:
+            entry["access"] = access
+        out_trails.append(entry)
+        print(f"  {distance_mi} mi, +{out_trails[-1]['gain_ft']} ft" + ("  [access connector]" if access else ""))
 
     if not out_trails:
         raise RuntimeError("no trails produced - aborting without writing output")
@@ -402,10 +412,71 @@ def main():
         json.dump(data, fh, separators=(",", ":"))
     print(f"\nWrote {OUTPUT}: {len(out_trails)} trails.")
 
+    inject_static_list(out_trails)
+
+
+# --------------------------------------------------------------------------
+# Static, crawlable trail list injected into index.html (SEO + no-JS fallback)
+# --------------------------------------------------------------------------
+INDEX = "index.html"
+LIST_START = "<!--trails:start-->"
+LIST_END = "<!--trails:end-->"
+
+
+def _esc(s):
+    return (str(s or "").replace("&", "&amp;").replace("<", "&lt;")
+            .replace(">", "&gt;").replace('"', "&quot;"))
+
+
+def static_cards(trails):
+    """Render the trail list as plain HTML (mirrors the JS-built cards)."""
+    out = []
+    for i, t in enumerate(trails):
+        diff = t.get("difficulty", "")
+        diff_html = (f'<span class="trail-diff diff-{_esc(diff.lower())}">{_esc(diff)}</span>'
+                     if diff else "")
+        meta = []
+        if t.get("distance_mi"):
+            meta.append(f'<span>{t["distance_mi"]} mi</span>')
+        if t.get("gain_ft"):
+            meta.append(f'<span>&uarr; {t["gain_ft"]:,} ft</span>')
+        blurb = f'<p class="trail-blurb">{_esc(t.get("blurb", ""))}</p>' if t.get("blurb") else ""
+        out.append(
+            f'<article class="trail-card"><div class="trail-card-head">'
+            f'<span class="trail-num">{i + 1}</span>'
+            f'<h3 class="trail-name">{_esc(t["name"])}</h3>'
+            f'<span class="trail-meta">{diff_html}{"".join(meta)}</span></div>'
+            f'{blurb}</article>'
+        )
+    return "".join(out)
+
+
+def inject_static_list(trails):
+    """Rewrite the block between the trails markers in index.html."""
+    try:
+        with open(INDEX) as fh:
+            html = fh.read()
+    except FileNotFoundError:
+        print(f"Note: {INDEX} not found - skipping static list injection.")
+        return
+    if LIST_START not in html or LIST_END not in html:
+        print(f"Note: trails markers not found in {INDEX} - skipping.")
+        return
+    head, rest = html.split(LIST_START, 1)
+    _, tail = rest.split(LIST_END, 1)
+    html = head + LIST_START + static_cards(trails) + LIST_END + tail
+    with open(INDEX, "w") as fh:
+        fh.write(html)
+    print(f"Injected {len(trails)} static trail cards into {INDEX}.")
+
 
 if __name__ == "__main__":
     try:
-        main()
+        if "--inject-only" in sys.argv:
+            with open(OUTPUT) as fh:
+                inject_static_list(json.load(fh)["trails"])
+        else:
+            main()
     except Exception as exc:  # noqa: BLE001
         print(f"error: {exc}", file=sys.stderr)
         sys.exit(1)

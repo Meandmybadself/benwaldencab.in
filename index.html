@@ -42,6 +42,50 @@
     <!-- Favicon (using the background image) -->
     <link rel="icon" type="image/webp" href="bg.webp">
     <link rel="apple-touch-icon" href="bg.webp">
+    <link rel="manifest" href="/site.webmanifest">
+    <!-- Preload the hero (LCP) image -->
+    <link rel="preload" as="image" href="bg.webp" fetchpriority="high">
+
+    <!-- Structured data for search engines -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "LodgingBusiness",
+          "@id": "https://benwaldencab.in/#lodging",
+          "name": "Benwalden",
+          "description": "A serene cabin retreat established in 2025, on the scenic Gunflint Trail in Minnesota's Northwoods near Grand Marais and the Boundary Waters.",
+          "url": "https://benwaldencab.in/",
+          "image": "https://benwaldencab.in/bg.webp",
+          "logo": "https://benwaldencab.in/bg.webp",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "22 Austin's Landing",
+            "addressLocality": "Grand Marais",
+            "addressRegion": "MN",
+            "postalCode": "55604",
+            "addressCountry": "US"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 48.0552,
+            "longitude": -90.5232
+          },
+          "areaServed": "Gunflint Trail, Cook County, Minnesota",
+          "knowsAbout": ["Gunflint Trail", "Boundary Waters Canoe Area", "Superior National Forest", "hiking", "birdwatching"]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://benwaldencab.in/#website",
+          "url": "https://benwaldencab.in/",
+          "name": "Benwalden",
+          "about": { "@id": "https://benwaldencab.in/#lodging" }
+        }
+      ]
+    }
+    </script>
+
     <!-- Typography.com fonts with Google Fonts fallback -->
     <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6984932/7080032/css/fonts.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -665,6 +709,16 @@
             margin-top: 0.7rem;
         }
 
+        .trails-intro {
+            font-family: "Work Sans", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            text-align: center;
+            color: #3a4a42;
+            max-width: 44rem;
+            margin: 1.1rem auto 0;
+        }
+
         .trails-layout {
             max-width: 1140px;
             margin: 2.75rem auto 0;
@@ -711,6 +765,14 @@
             stroke-linecap: round;
             stroke-linejoin: round;
             cursor: pointer;
+        }
+
+        .trails-map .access {
+            fill: none;
+            stroke: #bca77f;
+            stroke-width: 1.5;
+            stroke-dasharray: 5 4;
+            opacity: 0.75;
         }
 
         .trails-map .th-leader {
@@ -1228,7 +1290,7 @@
                         <path d="M236.44,73.34,213.21,57.86A60,60,0,0,0,156,16h-.29C122.79,16.16,96,43.47,96,76.89V96.63L11.63,197.88l-.1.12A16,16,0,0,0,24,224h88A104.11,104.11,0,0,0,216,120V100.28l20.44-13.62a8,8,0,0,0,0-13.32ZM126.15,133.12l-60,72a8,8,0,1,1-12.29-10.24l60-72a8,8,0,1,1,12.29,10.24ZM164,80a12,12,0,1,1,12-12A12,12,0,0,1,164,80Z"/>
                     </svg>
                 </a>
-                <a href="#trails" id="trails-link" class="icon-link" aria-label="Jump to nearby hiking trails" hidden>
+                <a href="#trails" id="trails-link" class="icon-link" aria-label="Jump to nearby hiking trails">
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M14 6l-3.6 4.8 1.8 2.4-1.6 1.2C8.8 12.6 6 9 6 9l-5 12h22L14 6zm.9 9.5l-1.4-1.9L15 11l3 4.5h-3.1z"/>
                     </svg>
@@ -1284,11 +1346,12 @@
         <div id="birds-grid" class="birds-grid"></div>
     </section>
 
-    <section id="trails" class="trails-section" aria-labelledby="trails-heading" hidden>
+    <section id="trails" class="trails-section" aria-labelledby="trails-heading">
         <h2 id="trails-heading" class="trails-heading">Trails Nearby</h2>
         <p class="trails-sub">Hikes along the Gunflint Trail</p>
+        <p class="trails-intro">The Gunflint Trail and surrounding Superior National Forest hold some of Minnesota's finest hiking — from short scenic overlooks like Honeymoon Bluff and Magnetic Rock to Eagle Mountain, the state's highest point, and the rugged Border Route and Kekekabic wilderness trails. These trailheads are all within reach of the cabin.</p>
         <div class="trails-layout">
-            <div id="trails-list" class="trails-list"></div>
+            <div id="trails-list" class="trails-list"><!--trails:start--><article class="trail-card"><div class="trail-card-head"><span class="trail-num">1</span><h3 class="trail-name">Magnetic Rock Trail</h3><span class="trail-meta"><span class="trail-diff diff-moderate">Moderate</span><span>3.2 mi</span><span>&uarr; 420 ft</span></span></div><p class="trail-blurb">Out-and-back past glacial erratics to a 25-foot magnetic monolith that deflects a compass. Open, rocky, and burned-over in stretches with big sky views.</p></article><article class="trail-card"><div class="trail-card-head"><span class="trail-num">2</span><h3 class="trail-name">Honeymoon Bluff Trail</h3><span class="trail-meta"><span class="trail-diff diff-easy">Easy</span><span>0.4 mi</span><span>&uarr; 141 ft</span></span></div><p class="trail-blurb">Short, steep stair-climb to a bluff overlooking Hungry Jack and West Bearskin Lakes. A classic sunset spot near the Clearwater Road.</p></article><article class="trail-card"><div class="trail-card-head"><span class="trail-num">3</span><h3 class="trail-name">Caribou Rock Trail</h3><span class="trail-meta"><span class="trail-diff diff-moderate">Moderate</span><span>3.9 mi</span><span>&uarr; 1,161 ft</span></span></div><p class="trail-blurb">Ridge-top overlooks of Bearskin, Duncan, and Moss Lakes. Turn around at the first vista or push on toward Stairway Portage.</p></article><article class="trail-card"><div class="trail-card-head"><span class="trail-num">4</span><h3 class="trail-name">South Lake Trail</h3><span class="trail-meta"><span class="trail-diff diff-strenuous">Strenuous</span><span>3.9 mi</span><span>&uarr; 1,332 ft</span></span></div><p class="trail-blurb">Steep access spur that climbs to the Border Route Trail and the cliffs above South Lake on the Canadian border. Short but a real workout.</p></article><article class="trail-card"><div class="trail-card-head"><span class="trail-num">5</span><h3 class="trail-name">Centennial Trail</h3><span class="trail-meta"><span class="trail-diff diff-easy">Easy</span><span>2.7 mi</span><span>&uarr; 394 ft</span></span></div><p class="trail-blurb">Interpretive loop through the 1999 blowdown and regrowth near the Gunflint Ranger Station, with boardwalks over wetland.</p></article><article class="trail-card"><div class="trail-card-head"><span class="trail-num">6</span><h3 class="trail-name">Border Route Trail</h3><span class="trail-meta"><span class="trail-diff diff-strenuous">Strenuous</span><span>65.2 mi</span><span>&uarr; 2,060 ft</span></span></div><p class="trail-blurb">Rugged 65-mile ridgeline route along the Canadian border, linking cliff-top lake overlooks across the highlands. Best sampled in day sections.</p></article><article class="trail-card"><div class="trail-card-head"><span class="trail-num">7</span><h3 class="trail-name">Kekekabic Trail</h3><span class="trail-meta"><span class="trail-diff diff-strenuous">Strenuous</span><span>41.0 mi</span><span>&uarr; 1,391 ft</span></span></div><p class="trail-blurb">Remote 40-mile wilderness traverse from the Gunflint Trail west toward Ely, deep into the Boundary Waters backcountry.</p></article><article class="trail-card"><div class="trail-card-head"><span class="trail-num">8</span><h3 class="trail-name">Eagle Mountain Trail</h3><span class="trail-meta"><span class="trail-diff diff-moderate">Moderate</span><span>3.2 mi</span><span>&uarr; 650 ft</span></span></div><p class="trail-blurb">The path to Minnesota's highest point (2,301 ft), passing Whale Lake through boreal forest and rock. Reached by forest road (The Grade) off the Gunflint Trail.</p></article><article class="trail-card"><div class="trail-card-head"><span class="trail-num">9</span><h3 class="trail-name">Pincushion Mountain Loop</h3><span class="trail-meta"><span class="trail-diff diff-moderate">Moderate</span><span>3.1 mi</span><span>&uarr; 505 ft</span></span></div><p class="trail-blurb">Network of loops on the Sawtooth ridge above Grand Marais, with a short spur to a granite dome overlooking Lake Superior.</p></article><!--trails:end--></div>
             <div class="trails-map-wrap">
                 <svg id="trails-map" class="trails-map" role="img" aria-label="Map of nearby trailheads along the Gunflint Trail" preserveAspectRatio="xMidYMid meet"></svg>
             </div>
@@ -1949,6 +2012,15 @@
                     + '" y="34">N</text>');
                 parts.push('<line class="th-leader" x1="' + (W - 24) + '" y1="40" x2="' + (W - 24) + '" y2="58"/>');
                 parts.push('<path d="M' + (W - 24) + ' 38 l-4 7 h8 z" fill="#8a958c"/>');
+                // Dashed access connectors for trailheads reached by forest road.
+                data.trails.forEach((t) => {
+                    if (t.access && Array.isArray(t.trailhead)) {
+                        parts.push('<line class="access" x1="' + X(t.trailhead[1]).toFixed(1)
+                            + '" y1="' + Y(t.trailhead[0]).toFixed(1)
+                            + '" x2="' + X(t.access[1]).toFixed(1)
+                            + '" y2="' + Y(t.access[0]).toFixed(1) + '"/>');
+                    }
+                });
                 data.trails.forEach((t, i) => {
                     (t.segments || []).forEach((seg) => {
                         parts.push('<polyline class="trail" data-i="' + i + '" points="' + pts(seg) + '"/>');

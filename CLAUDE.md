@@ -14,6 +14,7 @@ is self-contained (inline CSS + JS). Pushing to `main` deploys.
 - `trails.config.json` — curated nearby-hikes list (hand-edited).
 - `trails.json` — **generated** from the config by `build-trails.py`; committed
   and precached. Do not hand-edit.
+- `robots.txt`, `sitemap.xml`, `site.webmanifest` — SEO + PWA (see SEO section).
 - `bg.webp`, `looncallalert.mp3` — hero image, loon-call audio.
 
 ## Live data feeds (subdomains)
@@ -66,6 +67,22 @@ Pipeline: edit `trails.config.json` → run `./build-trails.sh` (needs network).
 - uses the OSM `distance` tag for relations (else measures geometry),
 - samples elevation via open-elevation (batch) with USGS EPQS fallback.
 
+Desktop: two-column layout (scrollable compact list left, short 55% map right;
+`--trails-map-h` drives both the map height and the list scroll box). Clicking a
+trail path / marker / card opens Google Maps directions to the trailhead (wide
+transparent `.trail-hit` lines make the thin paths clickable).
+
+Trailheads >3 km from the road get an `access` field (nearest road point);
+the renderer draws a dashed connector so they don't float (e.g. Eagle Mountain,
+reached by forest road). Note: OSM's trail endpoint may be the *summit*, not the
+parking area — set a `trailhead` override in `trails.config.json` when needed
+(Eagle Mountain uses one).
+
+`build-trails.py` also injects a static, crawlable trail list into the
+`<!--trails:start-->…<!--trails:end-->` block in `index.html` (SEO / no-JS
+fallback; JS replaces it at runtime). `python3 build-trails.py --inject-only`
+refreshes that block from `trails.json` with no network.
+
 Gotchas:
 - `trails.json` is precached — **bump `CACHE_VERSION` in `sw.js`** after
   regenerating it.
@@ -74,6 +91,19 @@ Gotchas:
 - OSM attribution (ODbL) in the section credit + `trails.json` must stay.
 - SVG map projection is equirectangular (`lonScale = cos(midLat)`); markers get
   collision-spread so overlapping trailheads (Gunflint Lake cluster) stay legible.
+- After editing the config, re-run the full build **and** re-inject the static
+  list (the full build does both; `--inject-only` does just the injection).
+
+## SEO / PWA
+
+- `index.html` `<head>`: title, meta description, OG + Twitter, canonical, a
+  JSON-LD `LodgingBusiness` + `WebSite` graph (name/address/geo/image), a
+  `manifest` link, and a `preload` of `bg.webp` (LCP hero).
+- `robots.txt` (allow all + sitemap), `sitemap.xml` (`/` and `/trailcam/` — bump
+  `lastmod` on real changes), `site.webmanifest` (installable PWA).
+- The Trails list is server-rendered as static HTML for crawlers (see above).
+- Trail-cam page SEO (description/canonical/OG/manifest) lives in
+  `build-trailcam.sh` — regenerate after changing it.
 
 ## build-trailcam.sh
 

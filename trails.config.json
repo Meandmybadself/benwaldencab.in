@@ -56,7 +56,8 @@
       "name": "Eagle Mountain Trail",
       "kind": "relation",
       "difficulty": "Moderate",
-      "blurb": "The path to Minnesota's highest point (2,301 ft), passing Whale Lake through boreal forest and rock. A Superior National Forest classic."
+      "trailhead": [47.86336, -90.54535],
+      "blurb": "The path to Minnesota's highest point (2,301 ft), passing Whale Lake through boreal forest and rock. Reached by forest road (The Grade) off the Gunflint Trail."
     },
     {
       "name": "Pincushion Mountain Loop",

@@ -10,6 +10,7 @@ https://benwaldencab.in
 - `trailcam/` — trail-camera photo gallery. **`trailcam/index.html` is generated** — edit `build-trailcam.sh`, not the HTML.
 - `sw.js` — service worker (offline support + caching).
 - `trails.config.json` / `trails.json` — curated nearby-hikes config and its generated data (see below).
+- `robots.txt` / `sitemap.xml` / `site.webmanifest` — SEO + PWA files (see SEO section).
 - `bg.webp`, `looncallalert.mp3` — hero image and loon-call audio.
 
 ## Live data feeds
@@ -65,9 +66,38 @@ open-elevation (USGS 3DEP / SRTM fallback), then writes `trails.json`. Long
 thru-hikes (Border Route, Kekekabic) are clipped to the corridor bbox so the map
 stays focused; their distances come from the official OSM `distance` tag.
 
+Desktop shows a two-column layout: a scrollable, compact trail list on the left
+and a short offline map at 55% on the right. Clicking a trail path, marker, or
+card opens Google Maps directions to that trailhead.
+
+Trailheads far off the Gunflint Trail (e.g. Eagle Mountain, reached by forest
+road) get a dashed **access connector** to the nearest road point instead of
+floating — computed automatically when a trailhead is >3 km from the road. Set a
+`trailhead` override in `trails.config.json` when OSM's endpoint is the summit
+rather than the parking area.
+
+`build-trails.py` also injects a static, crawlable copy of the trail list into
+the `<!--trails:start-->…<!--trails:end-->` block in `index.html` (SEO + no-JS
+fallback; the JS enhances it at runtime). Re-run `python3 build-trails.py
+--inject-only` to refresh that block from an existing `trails.json` without
+hitting the network.
+
 Trail geometry is © OpenStreetMap contributors (ODbL) — the attribution line in
 the section and `trails.json` must stay. `trails.json` is precached by the
 service worker, so bump `CACHE_VERSION` in `sw.js` after regenerating it.
+
+## SEO
+
+On-page basics live in `index.html`'s `<head>`: title, meta description, Open
+Graph + Twitter cards, canonical, and a **JSON-LD** `LodgingBusiness` + `WebSite`
+block (name, address, geo, image). Plus:
+
+- `robots.txt` — allows crawling, points to the sitemap.
+- `sitemap.xml` — lists `/` and `/trailcam/` (update `lastmod` on meaningful changes).
+- `site.webmanifest` — installable-PWA metadata, paired with the service worker.
+- `bg.webp` is preloaded (`fetchpriority="high"`) as the LCP hero image.
+- The trail list is server-rendered as static HTML (see above) so it's indexable.
+- The trail-cam page carries its own description, canonical, and OG tags (in `build-trailcam.sh`).
 
 ## Local development
 

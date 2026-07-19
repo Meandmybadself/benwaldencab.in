@@ -1,0 +1,18 @@
+{
+  "name": "Benwalden — Cabin on the Gunflint Trail",
+  "short_name": "Benwalden",
+  "description": "A serene cabin retreat on the Gunflint Trail in Minnesota's Northwoods.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#e8edee",
+  "theme_color": "#80A6BC",
+  "icons": [
+    {
+      "src": "/bg.webp",
+      "sizes": "1200x630",
+      "type": "image/webp",
+      "purpose": "any"
+    }
+  ]
+}
