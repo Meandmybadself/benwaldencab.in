@@ -327,6 +327,11 @@ def main():
     all_lat = [pt[0] for pt in road]
     all_lon = [pt[1] for pt in road]
 
+    home = cfg.get("home")
+    if home:
+        all_lat.append(home["lat"])
+        all_lon.append(home["lon"])
+
     for t in cfg["trails"]:
         osm_name = t.get("osm_name", t["name"])
         raw_segments = by_name.get(osm_name)
@@ -387,6 +392,12 @@ def main():
         "road": [[round(p[0], 5), round(p[1], 5)] for p in road],
         "trails": out_trails,
     }
+    if home:
+        data["home"] = {
+            "name": home.get("name", "Benwalden"),
+            "lat": round(float(home["lat"]), 5),
+            "lon": round(float(home["lon"]), 5),
+        }
     with open(OUTPUT, "w") as fh:
         json.dump(data, fh, separators=(",", ":"))
     print(f"\nWrote {OUTPUT}: {len(out_trails)} trails.")

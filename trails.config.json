@@ -4,6 +4,11 @@
   "//osm_name": "OSM name to match (defaults to name). 'trailhead' optional [lat, lon] override.",
   "bbox": [47.6, -91.2, 48.2, -90.0],
   "sample_points": 48,
+  "home": {
+    "name": "Benwalden",
+    "lat": 48.0552,
+    "lon": -90.5232
+  },
   "trails": [
     {
       "name": "Magnetic Rock Trail",
@@ -22,6 +27,12 @@
       "kind": "way",
       "difficulty": "Moderate",
       "blurb": "Ridge-top overlooks of Bearskin, Duncan, and Moss Lakes. Turn around at the first vista or push on toward Stairway Portage."
+    },
+    {
+      "name": "South Lake Trail",
+      "kind": "way",
+      "difficulty": "Strenuous",
+      "blurb": "Steep access spur that climbs to the Border Route Trail and the cliffs above South Lake on the Canadian border. Short but a real workout."
     },
     {
       "name": "Centennial Trail",

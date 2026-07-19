@@ -49,8 +49,11 @@ trailheads along the Gunflint Trail plus a card per trail (distance, elevation
 gain, and an elevation sparkline). It reads a committed, precached `trails.json`
 — no runtime API calls.
 
+The cabin itself is shown as a "you are here" marker, set by the `home` object
+in `trails.config.json`.
+
 Edit the curated list in **`trails.config.json`** (add/remove a trail, tweak a
-blurb or difficulty), then regenerate:
+blurb or difficulty, or move the cabin marker), then regenerate:
 
 ```sh
 ./build-trails.sh          # needs network + python3

@@ -717,6 +717,30 @@
             fill: #8a958c;
         }
 
+        .trails-map .road-label {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-style: italic;
+            font-size: 15px;
+            fill: #97836a;
+            letter-spacing: 0.03em;
+            paint-order: stroke;
+            stroke: #e3e9e3;
+            stroke-width: 3.5;
+        }
+
+        .trails-map .home-dot { fill: #b5533b; stroke: #fff; stroke-width: 2; }
+        .trails-map .home-glyph { fill: #fff; }
+
+        .trails-map .home-label {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-weight: 600;
+            font-size: 16px;
+            fill: #b5533b;
+            paint-order: stroke;
+            stroke: #e3e9e3;
+            stroke-width: 3.5;
+        }
+
         .trails-map .trail.active {
             stroke: #2b5d4c;
             stroke-width: 3.5;
@@ -1871,8 +1895,10 @@
                     i, tx: X(t.trailhead[1]), ty: Y(t.trailhead[0])
                 }));
                 marks.forEach((m) => { m.x = m.tx; m.y = m.ty; });
-                const MIN = 26;
-                for (let iter = 0; iter < 80; iter++) {
+                const HOME = (data.home && data.home.lat != null)
+                    ? { x: X(data.home.lon), y: Y(data.home.lat) } : null;
+                const MIN = 26, HOME_MIN = 32;
+                for (let iter = 0; iter < 90; iter++) {
                     for (let a = 0; a < marks.length; a++) {
                         for (let c = a + 1; c < marks.length; c++) {
                             let dx = marks[c].x - marks[a].x, dy = marks[c].y - marks[a].y;
@@ -1881,6 +1907,16 @@
                                 const push = (MIN - dist) / 2, ux = dx / dist, uy = dy / dist;
                                 marks[a].x -= ux * push; marks[a].y -= uy * push;
                                 marks[c].x += ux * push; marks[c].y += uy * push;
+                            }
+                        }
+                        // Push trailheads off the fixed cabin marker.
+                        if (HOME) {
+                            let dx = marks[a].x - HOME.x, dy = marks[a].y - HOME.y;
+                            let dist = Math.hypot(dx, dy) || 0.01;
+                            if (dist < HOME_MIN) {
+                                const push = HOME_MIN - dist;
+                                marks[a].x += (dx / dist) * push;
+                                marks[a].y += (dy / dist) * push;
                             }
                         }
                     }
@@ -1897,6 +1933,73 @@
                     parts.push('<circle class="th" data-i="' + m.i + '" cx="' + cx + '" cy="' + cy + '" r="11"/>');
                     parts.push('<text class="th-num" data-i="' + m.i + '" x="' + cx + '" y="' + cy + '">' + (m.i + 1) + '</text>');
                 });
+
+                // Benwalden — a distinct "you are here" marker on top of all else.
+                if (HOME) {
+                    const hx = HOME.x, hy = HOME.y;
+                    // Place the label on whichever side has more open space.
+                    let leftGap = Infinity, rightGap = Infinity;
+                    marks.forEach((m) => {
+                        if (Math.abs(m.y - hy) < 42) {
+                            if (m.x < hx) leftGap = Math.min(leftGap, hx - m.x);
+                            else rightGap = Math.min(rightGap, m.x - hx);
+                        }
+                    });
+                    let leftSide = leftGap > rightGap;
+                    if (hx > W * 0.82) leftSide = true;
+                    else if (hx < W * 0.18) leftSide = false;
+                    parts.push('<circle class="home-dot" cx="' + hx.toFixed(1) + '" cy="' + hy.toFixed(1) + '" r="9"/>');
+                    parts.push('<path class="home-glyph" d="'
+                        + 'M' + (hx - 4.5).toFixed(1) + ' ' + (hy + 4).toFixed(1)
+                        + ' L' + (hx - 4.5).toFixed(1) + ' ' + (hy - 0.5).toFixed(1)
+                        + ' L' + hx.toFixed(1) + ' ' + (hy - 5).toFixed(1)
+                        + ' L' + (hx + 4.5).toFixed(1) + ' ' + (hy - 0.5).toFixed(1)
+                        + ' L' + (hx + 4.5).toFixed(1) + ' ' + (hy + 4).toFixed(1) + ' Z"/>');
+                    parts.push('<text class="home-label" text-anchor="' + (leftSide ? 'end' : 'start') + '" x="'
+                        + (hx + (leftSide ? -14 : 14)).toFixed(1) + '" y="' + (hy + 5).toFixed(1) + '">'
+                        + esc(data.home.name || 'Benwalden') + '</text>');
+                }
+
+                // Name the road along its most open stretch, rotated to follow it.
+                if (Array.isArray(data.road) && data.road.length > 6) {
+                    const road = data.road.map((p) => ({ x: X(p[1]), y: Y(p[0]) }));
+                    const obstacles = marks.map((m) => ({ x: m.x, y: m.y }));
+                    if (HOME) obstacles.push(HOME);
+                    const n = road.length, lo = Math.floor(n * 0.12), hi = Math.floor(n * 0.88);
+                    const MARGIN = 160;
+                    const bearing = (i) => {
+                        const a = road[Math.max(0, i - 3)], c = road[Math.min(n - 1, i + 3)];
+                        let ux = c.x - a.x, uy = c.y - a.y;
+                        const len = Math.hypot(ux, uy) || 1;
+                        return { ux: ux / len, uy: uy / len };
+                    };
+                    let best = -1, bestScore = -Infinity;
+                    for (let i = lo; i < hi; i++) {
+                        if (road[i].x < MARGIN || road[i].x > W - MARGIN) continue;
+                        let clear = Infinity;
+                        obstacles.forEach((o) => {
+                            clear = Math.min(clear, Math.hypot(road[i].x - o.x, road[i].y - o.y));
+                        });
+                        const bg = bearing(i);
+                        let ang = Math.abs(Math.atan2(bg.uy, bg.ux) * 180 / Math.PI);
+                        if (ang > 90) ang = 180 - ang;                 // 0 = flat, 90 = vertical
+                        const score = clear - 2.6 * ang;               // prefer open AND flat
+                        if (score > bestScore) { bestScore = score; best = i; }
+                    }
+                    if (best > 0 && bestScore > 20) {
+                        const bg = bearing(best), pt = road[best];
+                        let ang = Math.atan2(bg.uy, bg.ux) * 180 / Math.PI;
+                        if (ang > 90) ang -= 180; else if (ang < -90) ang += 180;
+                        if (Math.abs(ang) > 28) ang = 0;               // keep steep stretches flat
+                        // Perpendicular offset so the text sits just above the road.
+                        let px = -bg.uy, py = bg.ux;
+                        if (py > 0) { px = -px; py = -py; }
+                        const ox = pt.x + px * 13, oy = pt.y + py * 13 - (ang === 0 ? 4 : 0);
+                        parts.push('<text class="road-label" text-anchor="middle" transform="translate('
+                            + ox.toFixed(1) + ',' + oy.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')">The Gunflint Trail</text>');
+                    }
+                }
+
                 svg.innerHTML = parts.join('');
 
                 const list = document.getElementById('trails-list');

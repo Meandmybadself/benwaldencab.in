@@ -53,6 +53,11 @@ elevation sparkline), all from a committed, precached `trails.json`. Renderer JS
 lives inline in `index.html` (last `<script>` before the SW script); CSS is the
 `.trails-*` / `.trail-*` block.
 
+The cabin's "you are here" marker comes from the `home` object in
+`trails.config.json` (name + lat/lon, hardcoded — geocoded once from the site's
+Google Maps link). It's drawn as a distinct rust-colored house pin, folded into
+the marker collision-spread, with its label auto-placed on the open side.
+
 Pipeline: edit `trails.config.json` → run `./build-trails.sh` (needs network).
 `build-trails.py`:
 - pulls all trail geometry + the CR-12 road spine in **one** Overpass query
