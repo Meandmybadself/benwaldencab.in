@@ -26,8 +26,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Stage converted webp files and the generated page
-          git add trailcam/images/ trailcam/index.html
+          # Stage converted webp files, the generated page, and the synced
+          # service-worker precache list.
+          git add trailcam/images/ trailcam/index.html sw.js
           git diff --staged --quiet && echo "No changes to commit." || \
             git commit -m "Convert images to WebP and rebuild trailcam page [skip ci]"
           git push

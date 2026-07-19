@@ -1546,5 +1546,38 @@
                 .catch((err) => console.log('Businesses feed unavailable:', err));
         })();
     </script>
+
+    <!-- Service worker: offline support + fresh-when-online caching -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                // Whether a worker already controlled this page at load time.
+                // On the very first visit there's none, so we skip the reload.
+                var hadController = !!navigator.serviceWorker.controller;
+                navigator.serviceWorker.register('/sw.js').then(function (reg) {
+                    // When an *updated* worker takes control, reload once so the
+                    // freshly-cached shell is shown right away.
+                    var refreshing = false;
+                    navigator.serviceWorker.addEventListener('controllerchange', function () {
+                        if (refreshing || !hadController) return;
+                        refreshing = true;
+                        window.location.reload();
+                    });
+                    // Nudge an updated, waiting worker to activate immediately.
+                    reg.addEventListener('updatefound', function () {
+                        var next = reg.installing;
+                        if (!next) return;
+                        next.addEventListener('statechange', function () {
+                            if (next.state === 'installed' && navigator.serviceWorker.controller) {
+                                next.postMessage('SKIP_WAITING');
+                            }
+                        });
+                    });
+                }).catch(function (err) {
+                    console.log('Service worker registration failed:', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>

@@ -317,8 +317,58 @@ printf '%s\n' '    if (e.key === "ArrowRight") navigate(1);'
 printf '%s\n' '  });'
 printf '%s\n' '</script>'
 printf '%s\n' ''
+printf '%s\n' '<!-- Service worker: offline support + fresh-when-online caching -->'
+printf '%s\n' '<script>'
+printf '%s\n' "  if ('serviceWorker' in navigator) {"
+printf '%s\n' "    window.addEventListener('load', function () {"
+printf '%s\n' "      navigator.serviceWorker.register('/sw.js').catch(function (err) {"
+printf '%s\n' "        console.log('Service worker registration failed:', err);"
+printf '%s\n' '      });'
+printf '%s\n' '    });'
+printf '%s\n' '  }'
+printf '%s\n' '</script>'
+printf '%s\n' ''
 printf '%s\n' '</body>'
 printf '%s\n' '</html>'
 } > "$OUTPUT"
 
 echo "Done. Wrote $OUTPUT"
+
+# ---------------------------------------------------------------------------
+# Keep the service worker's precache list in sync with the images on disk so
+# every trail-cam photo is available offline. Rewrites the block between the
+# trailcam-images:start / :end markers in sw.js.
+# ---------------------------------------------------------------------------
+sync_service_worker() {
+  local sw="sw.js"
+  if [[ ! -f "$sw" ]]; then
+    echo "Note: $sw not found — skipping precache sync."
+    return
+  fi
+
+  # Copy sw.js line by line, replacing everything between the markers with a
+  # freshly generated (sorted) precache entry per image. Pure bash so it stays
+  # portable across macOS (bash 3.2 / BSD tools) and Linux/CI.
+  local tmp skip=0 line
+  tmp="$(mktemp)"
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    case "$line" in
+      *trailcam-images:start*)
+        printf '%s\n' "$line"
+        for p in "${images[@]}"; do printf "  '/%s',\n" "$p"; done | sort
+        skip=1
+        continue
+        ;;
+      *trailcam-images:end*)
+        skip=0
+        ;;
+    esac
+    [[ $skip -eq 1 ]] && continue
+    printf '%s\n' "$line"
+  done < "$sw" > "$tmp"
+  mv "$tmp" "$sw"
+
+  echo "Synced $image_count image(s) into $sw precache."
+}
+
+sync_service_worker

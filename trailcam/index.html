@@ -234,5 +234,16 @@
   });
 </script>
 
+<!-- Service worker: offline support + fresh-when-online caching -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.log('Service worker registration failed:', err);
+      });
+    });
+  }
+</script>
+
 </body>
 </html>

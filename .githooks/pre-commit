@@ -34,6 +34,7 @@ done <<< "$staged"
 
 echo "Rebuilding trailcam page..."
 bash build-trailcam.sh
-git add trailcam/index.html
+# build-trailcam.sh also syncs the precache list in sw.js.
+git add trailcam/index.html sw.js
 
 echo "Done."
