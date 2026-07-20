@@ -1608,7 +1608,7 @@
                 .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
                 .then((data) => {
                     const species = (data && data.species) || [];
-                    const birds = species.filter((s) => s.thumbnailUrl);
+                    const birds = species.filter((s) => s.thumbnailUrl).slice(0, 12);
                     if (!birds.length) return;
 
                     const grid = document.getElementById('birds-grid');
