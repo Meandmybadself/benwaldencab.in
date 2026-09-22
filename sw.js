@@ -13,7 +13,7 @@
  * purged on activation.
  */
 
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const PRECACHE = `benwalden-precache-${CACHE_VERSION}`;
 const RUNTIME = `benwalden-runtime-${CACHE_VERSION}`;
 
