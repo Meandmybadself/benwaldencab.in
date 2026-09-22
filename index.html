@@ -672,6 +672,114 @@
             }
         }
 
+        /* Share of calls by species (donut + legend table) */
+        .birds-mix {
+            max-width: 760px;
+            margin: 3.5rem auto 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .birds-mix-title {
+            flex-basis: 100%;
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.78rem;
+            text-align: center;
+            color: #74837a;
+        }
+
+        .birds-pie {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            flex: none;
+        }
+
+        .birds-pie svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+        .birds-pie path {
+            stroke: #ece9e1;
+            stroke-width: 2;
+            stroke-linejoin: round;
+            cursor: default;
+            transition: opacity 0.15s ease;
+        }
+
+        .birds-mix.is-focused .birds-pie path:not(.is-active) { opacity: 0.35; }
+
+        .birds-pie-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            pointer-events: none;
+            padding: 0 3.25rem;
+        }
+
+        .birds-pie-value {
+            font-family: "Chronicle Display A", "Chronicle Display B", "Crimson Text", "Georgia", serif;
+            font-weight: 600;
+            font-size: 1.9rem;
+            line-height: 1;
+            color: #2b3a33;
+        }
+
+        .birds-pie-label {
+            font-family: "Ringside Narrow A", "Ringside Narrow B", "Work Sans", "Arial Narrow", sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.68rem;
+            line-height: 1.25;
+            color: #74837a;
+            margin-top: 0.35rem;
+        }
+
+        .birds-legend {
+            border-collapse: collapse;
+            font-family: "Work Sans", "Ringside Narrow A", "Helvetica Neue", "Arial", sans-serif;
+            font-size: 0.85rem;
+            color: #2b3a33;
+            min-width: 15rem;
+        }
+
+        .birds-legend td {
+            padding: 0.3rem 0.4rem;
+            border-bottom: 1px solid #dcd8cd;
+        }
+
+        .birds-legend td:first-child { width: 1%; }
+        .birds-legend tr:last-child td { border-bottom: 0; }
+        .birds-legend tr { transition: opacity 0.15s ease; }
+        .birds-mix.is-focused .birds-legend tr:not(.is-active) { opacity: 0.45; }
+
+        .birds-legend .swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            vertical-align: -1px;
+        }
+
+        .birds-legend .num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            color: #5c6b63;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 480px) {
+            .birds-mix { gap: 1.75rem; }
+            .birds-legend { min-width: 0; width: 100%; }
+        }
+
         /* "Trails Nearby" section */
         .trails-section {
             background: #e3e9e3;
@@ -1332,6 +1440,17 @@
         </div>
         <p class="birds-credit">Captured with <a href="https://www.birdweather.com/birdnetpi" target="_blank" rel="noopener noreferrer">BirdNET Pi</a> with data stored with <a href="https://app.birdweather.com/stations/28413" target="_blank" rel="noopener noreferrer">Birdweather</a>.</p>
         <div id="birds-grid" class="birds-grid"></div>
+        <figure id="birds-mix" class="birds-mix" hidden>
+            <figcaption class="birds-mix-title">Share of calls this week</figcaption>
+            <div class="birds-pie">
+                <svg viewBox="-110 -110 220 220" role="img" aria-labelledby="birds-mix-desc"><desc id="birds-mix-desc"></desc></svg>
+                <div class="birds-pie-center" aria-hidden="true">
+                    <span class="birds-pie-value"></span>
+                    <span class="birds-pie-label"></span>
+                </div>
+            </div>
+            <table class="birds-legend"><tbody></tbody></table>
+        </figure>
     </section>
 
     <section id="trails" class="trails-section" aria-labelledby="trails-heading">
@@ -1602,6 +1721,99 @@
                 });
         }
 
+        // Donut chart of the week's calls by species. The top species get the
+        // fixed categorical colors in order; the rest fold into "Other". The
+        // legend doubles as the data table (name, calls, share).
+        function renderBirdMix(species) {
+            const COLORS = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7'];
+            const OTHER_COLOR = '#9aa39c';
+            const rows = species
+                .map((s) => ({
+                    name: s.commonName || s.scientificName || 'Unknown bird',
+                    calls: (s.detections && s.detections.total) || 0,
+                }))
+                .filter((r) => r.calls > 0)
+                .sort((a, b) => b.calls - a.calls);
+            if (rows.length < 2) return false;
+
+            let slices = rows.slice(0, COLORS.length).map((r, i) => ({ ...r, color: COLORS[i] }));
+            const rest = rows.slice(COLORS.length);
+            if (rest.length === 1) {
+                slices.push({ ...rest[0], color: OTHER_COLOR });
+            } else if (rest.length > 1) {
+                slices.push({
+                    name: 'Other (' + rest.length + ' species)',
+                    calls: rest.reduce((n, r) => n + r.calls, 0),
+                    color: OTHER_COLOR,
+                });
+            }
+            const total = slices.reduce((n, r) => n + r.calls, 0);
+
+            const fig = document.getElementById('birds-mix');
+            const svg = fig.querySelector('svg');
+            const tbody = fig.querySelector('tbody');
+            const centerValue = fig.querySelector('.birds-pie-value');
+            const centerLabel = fig.querySelector('.birds-pie-label');
+            const NS = 'http://www.w3.org/2000/svg';
+            const R = 108, r = 64;
+            const pct = (n) => {
+                const p = (n / total) * 100;
+                return (p < 1 ? '<1' : Math.round(p)) + '%';
+            };
+            const pt = (rad, a) => (rad * Math.sin(a)).toFixed(2) + ' ' + (-rad * Math.cos(a)).toFixed(2);
+
+            const showTotal = () => {
+                centerValue.textContent = total.toLocaleString();
+                centerLabel.textContent = 'calls this week';
+            };
+            const paths = [], trs = [];
+            const focus = (i) => {
+                fig.classList.toggle('is-focused', i != null);
+                paths.forEach((p, j) => p.classList.toggle('is-active', j === i));
+                trs.forEach((t, j) => t.classList.toggle('is-active', j === i));
+                if (i == null) return showTotal();
+                centerValue.textContent = pct(slices[i].calls);
+                centerLabel.textContent = slices[i].name;
+            };
+
+            let a0 = 0;
+            slices.forEach((sl, i) => {
+                // Cap a lone full-circle slice just shy of 2π so the arc still draws.
+                const a1 = a0 + Math.min((sl.calls / total) * Math.PI * 2, Math.PI * 2 - 1e-4);
+                const large = a1 - a0 > Math.PI ? 1 : 0;
+                const path = document.createElementNS(NS, 'path');
+                path.setAttribute('d',
+                    'M' + pt(R, a0) + ' A' + R + ' ' + R + ' 0 ' + large + ' 1 ' + pt(R, a1) +
+                    ' L' + pt(r, a1) + ' A' + r + ' ' + r + ' 0 ' + large + ' 0 ' + pt(r, a0) + ' Z');
+                path.setAttribute('fill', sl.color);
+                const title = document.createElementNS(NS, 'title');
+                title.textContent = sl.name + ': ' + sl.calls.toLocaleString() + ' calls (' + pct(sl.calls) + ')';
+                path.append(title);
+                path.addEventListener('mouseenter', () => focus(i));
+                path.addEventListener('mouseleave', () => focus(null));
+                svg.append(path);
+                paths.push(path);
+                a0 = a1;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td><span class="swatch"></span></td><td class="name"></td><td class="num"></td><td class="num"></td>';
+                tr.querySelector('.swatch').style.background = sl.color;
+                tr.querySelector('.name').textContent = sl.name;
+                tr.children[2].textContent = sl.calls.toLocaleString();
+                tr.children[3].textContent = pct(sl.calls);
+                tr.addEventListener('mouseenter', () => focus(i));
+                tr.addEventListener('mouseleave', () => focus(null));
+                tbody.append(tr);
+                trs.push(tr);
+            });
+
+            svg.querySelector('desc').textContent = 'Share of ' + total + ' bird calls this week by species: ' +
+                slices.map((sl) => sl.name + ' ' + pct(sl.calls)).join(', ') + '.';
+            showTotal();
+            fig.hidden = false;
+            return true;
+        }
+
         // Populate "Birds heard this week" from the BirdWeather proxy feed.
         // The section stays hidden unless the feed loads with birds, so the
         // page degrades to the plain splash if the feed is unavailable.
@@ -1612,6 +1824,7 @@
                 .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
                 .then((data) => {
                     const species = (data && data.species) || [];
+                    if (renderBirdMix(species)) revealBirds();
                     const birds = species.filter((s) => s.thumbnailUrl).slice(0, 12);
                     if (!birds.length) return;
 
